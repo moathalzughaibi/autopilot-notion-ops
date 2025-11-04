@@ -1,0 +1,3 @@
+Name,Value,Description
+ENV,dev,Active environment
+SYNC_FREQUENCY,60m,How often sync runs
