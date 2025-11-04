@@ -1,0 +1,13 @@
+databases:
+  - name: Autopilot_Experiments_Log
+    unique_key: Key
+  - name: Autopilot_Decisions_Log
+    unique_key: Key
+  - name: Autopilot_Tasks_Backlog
+    unique_key: Key
+  - name: Autopilot_Glossary
+    unique_key: Term
+  - name: Autopilot_Variables_Config
+    unique_key: Name
+  - name: Autopilot_Architecture_Notes
+    unique_key: Key
