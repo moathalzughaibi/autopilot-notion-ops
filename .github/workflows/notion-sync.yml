@@ -1,0 +1,29 @@
+name: Notion Sync
+
+on:
+  workflow_dispatch:      # لظهور زر Run
+  push:
+    paths:
+      - "content/**"
+      - "schemas/**"
+      - "notion/sync/**"
+  schedule:
+    - cron: "*/30 * * * *"    # اختياري: تشغيل كل 30 دقيقة
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install notion-client python-dotenv
+      - name: Run sync to Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+        run: python notion/sync/sync.py
