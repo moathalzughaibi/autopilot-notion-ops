@@ -1,0 +1,2 @@
+Key,Decision,Why,Impact,Date
+DEC-0001,Switch to port 8891,Proxy 8889 had issues,Stable health through proxy,2025-11-04
