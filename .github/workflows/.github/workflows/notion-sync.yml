@@ -1,0 +1,40 @@
+name: Notion Sync
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - "content/**"
+      - "schemas/**"
+      - "notion/sync/**"
+      - ".github/workflows/notion-sync.yml"
+  schedule:
+    - cron: "0 * * * *"   # كل ساعة
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install notion-client pyyaml markdown pandas python-frontmatter
+
+      - name: Run sync to Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+        run: |
+          python notion/sync/sync.py
