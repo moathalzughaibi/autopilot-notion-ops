@@ -1,0 +1,20 @@
+name: Notion List (DBs under ROOT)
+on:
+  workflow_dispatch: {}
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+      CONTENT_DIR: content/databases
+      DEBUG_LIST: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+            python-version: "3.11"
+      - run: pip install notion-client
+      - name: List child databases under root
+        run: python notion/sync/sync.py
