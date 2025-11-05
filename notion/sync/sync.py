@@ -1,10 +1,9 @@
 # notion/sync/sync.py
-import os, csv, glob, time
+import os, csv, glob, time, json
 from typing import Optional, Dict, Any
 from notion_client import Client
 from notion_client.helpers import iterate_paginated_api
 
-# --- إعدادات من Secrets/Env ---
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")
 ROOT_PAGE_ID = os.environ.get("ROOT_PAGE_ID", "")
 CONTENT_DIR  = os.environ.get("CONTENT_DIR", "content/databases")
@@ -16,23 +15,24 @@ if not ROOT_PAGE_ID:
 
 notion = Client(auth=NOTION_TOKEN)
 
-# -----------------------------
 def log(msg: str) -> None:
     print(f"[sync] {time.strftime('%H:%M:%S')} {msg}", flush=True)
 
 def _db_title(db: Dict[str, Any]) -> str:
-    """استخرج عنوان قاعدة البيانات من كائن database"""
-    title = db.get("title", [])
-    if isinstance(title, list) and title and title[0].get("plain_text"):
-        return title[0]["plain_text"]
+    t = db.get("title", [])
+    if isinstance(t, list) and t and t[0].get("plain_text"):
+        return t[0]["plain_text"]
     return ""
 
+def _retrieve_db(db_id: str) -> Dict[str, Any]:
+    try:
+        return notion.databases.retrieve(db_id)
+    except Exception as e:
+        log(f"Failed retrieve for {db_id}: {e}")
+        return {"id": db_id, "properties": {}}
+
 def find_database_by_title(title: str) -> Optional[Dict[str, Any]]:
-    """
-    ابحث عن قاعدة بيانات باسم معين تحت ROOT_PAGE_ID.
-    أولاً نتصفح children للصفحة ونلتقط child_database بعنوان مطابق،
-    ثم نستدعي databases.retrieve للحصول على المخطط الكامل (properties).
-    """
+    # 1) ابحث ضمن Children لصفحة الجذر
     cursor = None
     while True:
         resp = notion.blocks.children.list(block_id=ROOT_PAGE_ID, start_cursor=cursor, page_size=100)
@@ -40,14 +40,12 @@ def find_database_by_title(title: str) -> Optional[Dict[str, Any]]:
             if child.get("type") == "child_database":
                 ch = child["child_database"]
                 if ch.get("title") == title:
-                    # مهم: جلب قاعدة البيانات كاملة بمخططها
-                    db = notion.databases.retrieve(child["id"])
-                    return db
+                    return _retrieve_db(child["id"])
         if not resp.get("has_more"):
             break
         cursor = resp.get("next_cursor")
 
-    # احتياط: بحث عام (قد يفيد لو كانت DB ليست مباشرة تحت الجذر)
+    # 2) احتياط: بحث عام
     for obj in iterate_paginated_api(
         notion.search,
         filter={"value": "database", "property": "object"},
@@ -55,34 +53,29 @@ def find_database_by_title(title: str) -> Optional[Dict[str, Any]]:
         query=title,
     ):
         if obj.get("object") == "database" and _db_title(obj) == title:
-            db = notion.databases.retrieve(obj["id"])
-            return db
+            return _retrieve_db(obj["id"])
 
     return None
 
 def ensure_property_types(db: Dict[str, Any]) -> Dict[str, str]:
-    props = db.get("properties", {})
+    props = db.get("properties", {}) or {}
     return {name: meta.get("type", "rich_text") for name, meta in props.items()}
 
 def upsert_page(db_id: str, title_prop: str, row: Dict[str, str], prop_types: Dict[str, str]) -> None:
-    # اسم الحقل العنوان (قد يكون Name/Title/…)
-    name_val = row.get("Name") or row.get("Title") or row.get("name") or row.get("title") or ""
+    name_val = row.get(title_prop) or row.get("Name") or row.get("Title") or row.get("name") or row.get("title") or ""
     if not name_val:
         return
 
-    props: Dict[str, Any] = {}
-    props[title_prop] = {"title": [{"type": "text", "text": {"content": str(name_val)}}]}
+    props: Dict[str, Any] = {
+        title_prop: {"title": [{"type": "text", "text": {"content": str(name_val)}}]}
+    }
 
     for k, v in row.items():
         if k in (title_prop, "Name", "Title", "name", "title"):
             continue
         v = "" if v is None else str(v)
-
-        # خرّط الحقول ببساطة إلى rich_text كافتراضي آمن
         ptype = prop_types.get(k, "rich_text")
-        if ptype == "rich_text":
-            props[k] = {"rich_text": [{"type": "text", "text": {"content": v}}]}
-        elif ptype == "number":
+        if ptype == "number":
             try:
                 num = float(v) if v else None
             except ValueError:
@@ -97,7 +90,6 @@ def upsert_page(db_id: str, title_prop: str, row: Dict[str, str], prop_types: Di
         elif ptype == "phone_number":
             props[k] = {"phone_number": v or None}
         else:
-            # fallback
             props[k] = {"rich_text": [{"type": "text", "text": {"content": v}}]}
 
     notion.pages.create(parent={"database_id": db_id}, properties=props)
@@ -109,16 +101,14 @@ def sync_csv_to_db(db_title: str, csv_path: str) -> None:
     if not db:
         raise SystemExit(f"Database not found in Notion: {db_title}")
 
-    # التحقق من وجود حقل العنوان
-    title_prop = None
-    for name, meta in db.get("properties", {}).items():
-        if meta.get("type") == "title":
-            title_prop = name
-            break
+    props = db.get("properties") or {}
+    # حاول العثور على عنوان… وإلا استخدم افتراضيًا "Name" ثم "Title"
+    title_prop = next((k for k, v in (props or {}).items() if v.get("type") == "title"), None)
     if not title_prop:
-        # اطبع المخطط للمساعدة في التشخيص
-        log(f"Schema of {db_title}: {list(db.get('properties', {}).keys())}")
-        raise SystemExit(f"No title property found in DB: {db_title}")
+        # اطبع تشخيصًا واقترح الافتراضي
+        log(f"Schema of {db_title}: {list(props.keys())}")
+        title_prop = "Name" if "Name" in (props or {}) else ("Title" if "Title" in (props or {}) else "Name")
+        log(f"Falling back to title_prop='{title_prop}'")
 
     prop_types = ensure_property_types(db)
 
@@ -137,7 +127,6 @@ def main() -> None:
     if not csv_paths:
         log(f"No CSV files under: {CONTENT_DIR}")
         return
-
     for csv_path in csv_paths:
         db_title = infer_db_title_from_filename(csv_path)
         sync_csv_to_db(db_title, csv_path)
