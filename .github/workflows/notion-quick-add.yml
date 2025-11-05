@@ -1,0 +1,29 @@
+name: Notion Quick Add
+
+on:
+  workflow_dispatch:
+    inputs:
+      db_title:
+        description: "Notion DB title (exact)"
+        required: true
+      properties_json:
+        description: "JSON of properties for the new page"
+        required: true
+        default: '{"Name":"Example Row"}'
+
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+            python-version: "3.11"
+      - run: pip install notion-client
+      - name: Add page to Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+          DB_TITLE: ${{ github.event.inputs.db_title }}
+          PROPS_JSON: ${{ github.event.inputs.properties_json }}
+        run: python notion/tools/add_page.py
