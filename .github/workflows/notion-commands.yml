@@ -1,0 +1,44 @@
+name: Notion Commands Runner
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'content/commands/**/*'
+      - 'content/commands/*'
+
+jobs:
+  run-commands:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: notion-commands
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find latest command files
+        id: list
+        run: |
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          git diff --name-only HEAD~1 HEAD | grep -E '^content/commands/.*\.(ya?ml|json)$' || true >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install notion-client pyyaml
+
+      - name: Run commands
+        if: steps.list.outputs.files != ''
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+        run: |
+          python notion/ops/commands_runner.py <<'EOF'
+          ${{ steps.list.outputs.files }}
+          EOF
+
+      - name: No commands found
+        if: steps.list.outputs.files == ''
+        run: echo "No new command files detected."
