@@ -1,0 +1,26 @@
+name: Notion Integration Layer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-integration-layer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install notion-client
+
+      - name: Create/Update Integration Layer DBs
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+        run: |
+          python notion/integration_layer/create_integration_layer.py
