@@ -1,6 +1,6 @@
 # notion/sync/sync.py
-import os, csv, glob, time, json
-from typing import Optional, Dict, Any
+import os, csv, glob, time
+from typing import Optional, Dict, Any, List
 from notion_client import Client
 from notion_client.helpers import iterate_paginated_api
 
@@ -41,8 +41,7 @@ def find_database_by_title(title: str) -> Optional[Dict[str, Any]]:
                 ch = child["child_database"]
                 if ch.get("title") == title:
                     return _retrieve_db(child["id"])
-        if not resp.get("has_more"):
-            break
+        if not resp.get("has_more"): break
         cursor = resp.get("next_cursor")
 
     # 2) احتياط: بحث عام
@@ -54,15 +53,54 @@ def find_database_by_title(title: str) -> Optional[Dict[str, Any]]:
     ):
         if obj.get("object") == "database" and _db_title(obj) == title:
             return _retrieve_db(obj["id"])
-
     return None
+
+def ensure_schema(db_id: str, csv_headers: List[str]) -> str:
+    """
+    يتأكد من وجود عمود عنوان + أي أعمدة مطلوبة من CSV.
+    يرجّع اسم عمود العنوان للاستخدام عند إنشاء الصفحات.
+    """
+    db = _retrieve_db(db_id)
+    props = db.get("properties") or {}
+    # ابحث عن عمود العنوان
+    title_prop = next((k for k, v in props.items() if v.get("type") == "title"), None)
+
+    update_props: Dict[str, Any] = {}
+
+    if not title_prop:
+        # أنشئ عمود عنوان افتراضي
+        update_props["Name"] = {"title": {}}
+        title_prop = "Name"
+
+    # أضف أي أعمدة من CSV غير موجودة
+    for h in csv_headers:
+        if h == title_prop:              # موجود مسبقًا
+            continue
+        if h in props:                   # العمود موجود
+            continue
+        # أنشئه كنص افتراضي
+        update_props[h] = {"rich_text": {}}
+
+    if update_props:
+        log(f"Updating DB schema with: {list(update_props.keys())}")
+        notion.databases.update(db_id=db_id, properties=update_props)
+        # استرجع بعد التحديث
+        db = _retrieve_db(db_id)
+        props = db.get("properties") or {}
+
+    return title_prop
 
 def ensure_property_types(db: Dict[str, Any]) -> Dict[str, str]:
     props = db.get("properties", {}) or {}
     return {name: meta.get("type", "rich_text") for name, meta in props.items()}
 
 def upsert_page(db_id: str, title_prop: str, row: Dict[str, str], prop_types: Dict[str, str]) -> None:
-    name_val = row.get(title_prop) or row.get("Name") or row.get("Title") or row.get("name") or row.get("title") or ""
+    # قيّم العنوان من عدة مفاتيح محتملة
+    name_val = (
+        row.get(title_prop) or
+        row.get("Name") or row.get("Title") or
+        row.get("name") or row.get("title") or ""
+    )
     if not name_val:
         return
 
@@ -71,15 +109,13 @@ def upsert_page(db_id: str, title_prop: str, row: Dict[str, str], prop_types: Di
     }
 
     for k, v in row.items():
-        if k in (title_prop, "Name", "Title", "name", "title"):
+        if k == title_prop:
             continue
         v = "" if v is None else str(v)
         ptype = prop_types.get(k, "rich_text")
         if ptype == "number":
-            try:
-                num = float(v) if v else None
-            except ValueError:
-                num = None
+            try: num = float(v) if v else None
+            except ValueError: num = None
             props[k] = {"number": num}
         elif ptype == "checkbox":
             props[k] = {"checkbox": v.lower() in ("1", "true", "yes")}
@@ -94,33 +130,35 @@ def upsert_page(db_id: str, title_prop: str, row: Dict[str, str], prop_types: Di
 
     notion.pages.create(parent={"database_id": db_id}, properties=props)
 
+def infer_db_title_from_filename(csv_path: str) -> str:
+    return os.path.splitext(os.path.basename(csv_path))[0]
+
 def sync_csv_to_db(db_title: str, csv_path: str) -> None:
     log(f"Syncing CSV → DB | {os.path.basename(csv_path)} -> {db_title}")
-
     db = find_database_by_title(db_title)
     if not db:
         raise SystemExit(f"Database not found in Notion: {db_title}")
 
-    props = db.get("properties") or {}
-    # حاول العثور على عنوان… وإلا استخدم افتراضيًا "Name" ثم "Title"
-    title_prop = next((k for k, v in (props or {}).items() if v.get("type") == "title"), None)
-    if not title_prop:
-        # اطبع تشخيصًا واقترح الافتراضي
-        log(f"Schema of {db_title}: {list(props.keys())}")
-        title_prop = "Name" if "Name" in (props or {}) else ("Title" if "Title" in (props or {}) else "Name")
-        log(f"Falling back to title_prop='{title_prop}'")
+    # اقرأ الرؤوس أولاً لتجهيز المخطط
+    with open(csv_path, encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        headers = reader.fieldnames or []
+    if not headers:
+        log(f"Empty/invalid CSV headers in: {csv_path}")
+        return
 
+    title_prop = ensure_schema(db["id"], headers)
+    # بعد التحديث خذ الأنواع
+    db = _retrieve_db(db["id"])
     prop_types = ensure_property_types(db)
 
+    # أدرج الصفوف
     with open(csv_path, encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         for row in reader:
             upsert_page(db["id"], title_prop, row, prop_types)
 
     log(f"Done: {db_title}")
-
-def infer_db_title_from_filename(csv_path: str) -> str:
-    return os.path.splitext(os.path.basename(csv_path))[0]
 
 def main() -> None:
     csv_paths = sorted(glob.glob(os.path.join(CONTENT_DIR, "*.csv")))
