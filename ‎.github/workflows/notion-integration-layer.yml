@@ -1,0 +1,35 @@
+name: Notion Integration Layer
+
+on:
+  workflow_dispatch:
+    inputs:
+      commands:
+        description: 'JSON array of ops to run (e.g. [{"op":"list_dbs_under_root","limit":50}])'
+        required: true
+        type: string
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install notion-client
+
+      - name: Run integration layer
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+        run: |
+          python notion/integration_layer/create_integration_layer.py <<'JSON'
+          ${{ inputs.commands }}
+          JSON
