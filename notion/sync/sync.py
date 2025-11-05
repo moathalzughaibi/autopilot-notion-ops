@@ -31,8 +31,23 @@ def _retrieve_db(db_id: str) -> Dict[str, Any]:
         log(f"Failed retrieve for {db_id}: {e}")
         return {"id": db_id, "properties": {}}
 
+def _create_db_under_root(title: str, headers: List[str]) -> Dict[str, Any]:
+    # properties: Title column + باقي الرؤوس كنص
+    props: Dict[str, Any] = {"Name": {"title": {}}}
+    for h in headers:
+        if h == "Name":  # already title
+            continue
+        props[h] = {"rich_text": {}}
+    log(f"Creating DB '{title}' under ROOT with properties: {list(props.keys())}")
+    db = notion.databases.create(
+        parent={"type": "page_id", "page_id": ROOT_PAGE_ID},
+        title=[{"type": "text", "text": {"content": title}}],
+        properties=props,
+    )
+    return db
+
 def find_database_by_title(title: str) -> Optional[Dict[str, Any]]:
-    # 1) ابحث ضمن Children لصفحة الجذر
+    # 1) Traverse children of ROOT
     cursor = None
     while True:
         resp = notion.blocks.children.list(block_id=ROOT_PAGE_ID, start_cursor=cursor, page_size=100)
@@ -41,10 +56,11 @@ def find_database_by_title(title: str) -> Optional[Dict[str, Any]]:
                 ch = child["child_database"]
                 if ch.get("title") == title:
                     return _retrieve_db(child["id"])
-        if not resp.get("has_more"): break
+        if not resp.get("has_more"):
+            break
         cursor = resp.get("next_cursor")
 
-    # 2) احتياط: بحث عام
+    # 2) Fallback: global search
     for obj in iterate_paginated_api(
         notion.search,
         filter={"value": "database", "property": "object"},
@@ -62,31 +78,26 @@ def ensure_schema(db_id: str, csv_headers: List[str]) -> str:
     """
     db = _retrieve_db(db_id)
     props = db.get("properties") or {}
-    # ابحث عن عمود العنوان
+    # find title property
     title_prop = next((k for k, v in props.items() if v.get("type") == "title"), None)
 
     update_props: Dict[str, Any] = {}
-
     if not title_prop:
-        # أنشئ عمود عنوان افتراضي
         update_props["Name"] = {"title": {}}
         title_prop = "Name"
 
-    # أضف أي أعمدة من CSV غير موجودة
-    for h in csv_headers:
-        if h == title_prop:              # موجود مسبقًا
+    for h in (csv_headers or []):
+        if h == title_prop:
             continue
-        if h in props:                   # العمود موجود
+        if h in props:
             continue
-        # أنشئه كنص افتراضي
         update_props[h] = {"rich_text": {}}
 
     if update_props:
         log(f"Updating DB schema with: {list(update_props.keys())}")
-        notion.databases.update(db_id=db_id, properties=update_props)
-        # استرجع بعد التحديث
+        # <-- التصحيح هنا: يجب تمرير database_id وليس db_id
+        notion.databases.update(database_id=db_id, properties=update_props)
         db = _retrieve_db(db_id)
-        props = db.get("properties") or {}
 
     return title_prop
 
@@ -95,11 +106,9 @@ def ensure_property_types(db: Dict[str, Any]) -> Dict[str, str]:
     return {name: meta.get("type", "rich_text") for name, meta in props.items()}
 
 def upsert_page(db_id: str, title_prop: str, row: Dict[str, str], prop_types: Dict[str, str]) -> None:
-    # قيّم العنوان من عدة مفاتيح محتملة
     name_val = (
-        row.get(title_prop) or
-        row.get("Name") or row.get("Title") or
-        row.get("name") or row.get("title") or ""
+        row.get(title_prop) or row.get("Name") or row.get("Title")
+        or row.get("name") or row.get("title") or ""
     )
     if not name_val:
         return
@@ -107,15 +116,16 @@ def upsert_page(db_id: str, title_prop: str, row: Dict[str, str], prop_types: Di
     props: Dict[str, Any] = {
         title_prop: {"title": [{"type": "text", "text": {"content": str(name_val)}}]}
     }
-
     for k, v in row.items():
         if k == title_prop:
             continue
         v = "" if v is None else str(v)
         ptype = prop_types.get(k, "rich_text")
         if ptype == "number":
-            try: num = float(v) if v else None
-            except ValueError: num = None
+            try:
+                num = float(v) if v else None
+            except ValueError:
+                num = None
             props[k] = {"number": num}
         elif ptype == "checkbox":
             props[k] = {"checkbox": v.lower() in ("1", "true", "yes")}
@@ -135,11 +145,8 @@ def infer_db_title_from_filename(csv_path: str) -> str:
 
 def sync_csv_to_db(db_title: str, csv_path: str) -> None:
     log(f"Syncing CSV → DB | {os.path.basename(csv_path)} -> {db_title}")
-    db = find_database_by_title(db_title)
-    if not db:
-        raise SystemExit(f"Database not found in Notion: {db_title}")
 
-    # اقرأ الرؤوس أولاً لتجهيز المخطط
+    # اقرأ الرؤوس أولاً (حتى لو احتجنا لإنشاء DB)
     with open(csv_path, encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         headers = reader.fieldnames or []
@@ -147,12 +154,15 @@ def sync_csv_to_db(db_title: str, csv_path: str) -> None:
         log(f"Empty/invalid CSV headers in: {csv_path}")
         return
 
+    db = find_database_by_title(db_title)
+    if not db:
+        log(f"DB '{db_title}' not found, creating it under ROOT...")
+        db = _create_db_under_root(db_title, headers)
+
     title_prop = ensure_schema(db["id"], headers)
-    # بعد التحديث خذ الأنواع
-    db = _retrieve_db(db["id"])
+    db = _retrieve_db(db["id"])  # refresh
     prop_types = ensure_property_types(db)
 
-    # أدرج الصفوف
     with open(csv_path, encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         for row in reader:
