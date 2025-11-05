@@ -1,0 +1,23 @@
+name: Ops Command Runner
+
+on:
+  schedule:
+    - cron: "*/2 * * * *"   # كل دقيقتين
+  workflow_dispatch: {}
+
+jobs:
+  run-ops:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install notion-client
+      - name: Execute commands from Notion queue
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python notion/ops/command_runner.py
