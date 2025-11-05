@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "notion": {
+    "token": "${{ secrets.NOTION_TOKEN }}",
+    "root_page_id": "${{ secrets.ROOT_PAGE_ID }}",
+    "default_title_prop": "Name",
+    "databases": {
+      "Autopilot_Experiments_Log": "",
+      "Autopilot_Decisions_Log": "",
+      "Autopilot_Tasks_Backlog": "",
+      "Autopilot_Glossary": "",
+      "Autopilot_Variables_Config": "",
+      "Autopilot_Architecture_Notes": ""
+    },
+    "share_hint": "تأكد أن Autopilot Hub Bot يملك وصول (Can edit) على صفحة الجذر وجميع قواعد البيانات."
+  },
+  "github": {
+    "repo": "moathalzughaibi/autopilot-notion-ops",
+    "default_branch": "main",
+    "workflows": {
+      "seed": ".github/workflows/notion-seed.yml",
+      "sync": ".github/workflows/notion-sync.yml",
+      "backup": ".github/workflows/notion-backup.yml",
+      "list": ".github/workflows/notion-list.yml"
+    },
+    "content_dirs": {
+      "databases": "content/databases",
+      "pages": "content/pages"
+    },
+    "watch_patterns": [
+      "content/databases/*.csv",
+      "content/pages/**/*.md"
+    ]
+  },
+  "automation": {
+    "on_push": true,
+    "on_schedule_cron": "0,30 * * * *",
+    "webhook": {
+      "enabled": false,
+      "url": "",
+      "secret": ""
+    }
+  },
+  "mapping": [
+    { "csv": "content/databases/Autopilot_Experiments_Log.csv",   "database": "Autopilot_Experiments_Log" },
+    { "csv": "content/databases/Autopilot_Decisions_Log.csv",     "database": "Autopilot_Decisions_Log" },
+    { "csv": "content/databases/Autopilot_Tasks_Backlog.csv",     "database": "Autopilot_Tasks_Backlog" },
+    { "csv": "content/databases/Autopilot_Glossary.csv",          "database": "Autopilot_Glossary" },
+    { "csv": "content/databases/Autopilot_Variables_Config.csv",  "database": "Autopilot_Variables_Config" },
+    { "csv": "content/databases/Autopilot_Architecture_Notes.csv","database": "Autopilot_Architecture_Notes" }
+  ],
+  "notes": [
+    "المفاتيح NOTION_TOKEN و ROOT_PAGE_ID تأتي من Secrets في GitHub.",
+    "سكربت sync.py يستنتج اسم قاعدة البيانات من اسم الملف CSV؛ قسم mapping يضمن المطابقة 1:1 لو تغيّر الاسم.",
+    "يمكن لاحقًا تعبئة IDs لقواعد Notion داخل الحقول الفارغة إن رغبت بتثبيت الربط على الـ ID بدل العنوان."
+  ]
+}
