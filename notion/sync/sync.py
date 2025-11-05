@@ -1,8 +1,9 @@
 # notion/sync/sync.py
-import os, csv, glob, time
+import os, csv, glob, time, re
 from typing import Optional, Dict, Any, List
 from notion_client import Client
 from notion_client.helpers import iterate_paginated_api
+from notion_client.errors import APIResponseError
 
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")
 ROOT_PAGE_ID = os.environ.get("ROOT_PAGE_ID", "")
@@ -32,10 +33,9 @@ def _retrieve_db(db_id: str) -> Dict[str, Any]:
         return {"id": db_id, "properties": {}}
 
 def _create_db_under_root(title: str, headers: List[str]) -> Dict[str, Any]:
-    # properties: Title column + باقي الرؤوس كنص
     props: Dict[str, Any] = {"Name": {"title": {}}}
     for h in headers:
-        if h == "Name":  # already title
+        if h == "Name":
             continue
         props[h] = {"rich_text": {}}
     log(f"Creating DB '{title}' under ROOT with properties: {list(props.keys())}")
@@ -47,7 +47,7 @@ def _create_db_under_root(title: str, headers: List[str]) -> Dict[str, Any]:
     return db
 
 def find_database_by_title(title: str) -> Optional[Dict[str, Any]]:
-    # 1) Traverse children of ROOT
+    # 1) children of ROOT
     cursor = None
     while True:
         resp = notion.blocks.children.list(block_id=ROOT_PAGE_ID, start_cursor=cursor, page_size=100)
@@ -60,7 +60,7 @@ def find_database_by_title(title: str) -> Optional[Dict[str, Any]]:
             break
         cursor = resp.get("next_cursor")
 
-    # 2) Fallback: global search
+    # 2) fallback search
     for obj in iterate_paginated_api(
         notion.search,
         filter={"value": "database", "property": "object"},
@@ -72,13 +72,9 @@ def find_database_by_title(title: str) -> Optional[Dict[str, Any]]:
     return None
 
 def ensure_schema(db_id: str, csv_headers: List[str]) -> str:
-    """
-    يتأكد من وجود عمود عنوان + أي أعمدة مطلوبة من CSV.
-    يرجّع اسم عمود العنوان للاستخدام عند إنشاء الصفحات.
-    """
+    """يضمن وجود عمود العنوان والحقول المطلوبة من CSV ويعيد اسم عمود العنوان."""
     db = _retrieve_db(db_id)
     props = db.get("properties") or {}
-    # find title property
     title_prop = next((k for k, v in props.items() if v.get("type") == "title"), None)
 
     update_props: Dict[str, Any] = {}
@@ -95,8 +91,8 @@ def ensure_schema(db_id: str, csv_headers: List[str]) -> str:
 
     if update_props:
         log(f"Updating DB schema with: {list(update_props.keys())}")
-        # <-- التصحيح هنا: يجب تمرير database_id وليس db_id
         notion.databases.update(database_id=db_id, properties=update_props)
+        time.sleep(1.5)  # مهلة قصيرة حتى تصبح الخواص فعّالة
         db = _retrieve_db(db_id)
 
     return title_prop
@@ -104,6 +100,22 @@ def ensure_schema(db_id: str, csv_headers: List[str]) -> str:
 def ensure_property_types(db: Dict[str, Any]) -> Dict[str, str]:
     props = db.get("properties", {}) or {}
     return {name: meta.get("type", "rich_text") for name, meta in props.items()}
+
+_MISSING_PROP_RE = re.compile(r"([A-Za-z0-9 _\-]+) is not a property that exists")
+
+def _add_missing_properties(db_id: str, missing_keys: List[str]) -> None:
+    update_props = {}
+    for k in missing_keys:
+        update_props[k] = {"rich_text": {}}
+    if update_props:
+        log(f"Adding missing properties on demand: {missing_keys}")
+        notion.databases.update(database_id=db_id, properties=update_props)
+        time.sleep(1.5)
+
+def _extract_missing_props_from_error(e: APIResponseError) -> List[str]:
+    # يحاول استخراج أسماء الخواص المفقودة من رسالة الخطأ
+    txt = getattr(e, "message", "") or str(e)
+    return _MISSING_PROP_RE.findall(txt)
 
 def upsert_page(db_id: str, title_prop: str, row: Dict[str, str], prop_types: Dict[str, str]) -> None:
     name_val = (
@@ -113,32 +125,49 @@ def upsert_page(db_id: str, title_prop: str, row: Dict[str, str], prop_types: Di
     if not name_val:
         return
 
-    props: Dict[str, Any] = {
-        title_prop: {"title": [{"type": "text", "text": {"content": str(name_val)}}]}
-    }
-    for k, v in row.items():
-        if k == title_prop:
-            continue
-        v = "" if v is None else str(v)
-        ptype = prop_types.get(k, "rich_text")
-        if ptype == "number":
-            try:
-                num = float(v) if v else None
-            except ValueError:
-                num = None
-            props[k] = {"number": num}
-        elif ptype == "checkbox":
-            props[k] = {"checkbox": v.lower() in ("1", "true", "yes")}
-        elif ptype == "url":
-            props[k] = {"url": v or None}
-        elif ptype == "email":
-            props[k] = {"email": v or None}
-        elif ptype == "phone_number":
-            props[k] = {"phone_number": v or None}
-        else:
-            props[k] = {"rich_text": [{"type": "text", "text": {"content": v}}]}
+    def build_props() -> Dict[str, Any]:
+        props: Dict[str, Any] = {
+            title_prop: {"title": [{"type": "text", "text": {"content": str(name_val)}}]}
+        }
+        for k, v in row.items():
+            if k == title_prop:
+                continue
+            v = "" if v is None else str(v)
+            ptype = prop_types.get(k, "rich_text")
+            if ptype == "number":
+                try:
+                    num = float(v) if v else None
+                except ValueError:
+                    num = None
+                props[k] = {"number": num}
+            elif ptype == "checkbox":
+                props[k] = {"checkbox": v.lower() in ("1", "true", "yes")}
+            elif ptype == "url":
+                props[k] = {"url": v or None}
+            elif ptype == "email":
+                props[k] = {"email": v or None}
+            elif ptype == "phone_number":
+                props[k] = {"phone_number": v or None}
+            else:
+                props[k] = {"rich_text": [{"type": "text", "text": {"content": v}}]}
+        return props
 
-    notion.pages.create(parent={"database_id": db_id}, properties=props)
+    props = build_props()
+    try:
+        notion.pages.create(parent={"database_id": db_id}, properties=props)
+        return
+    except APIResponseError as e:
+        # إذا فشل لعدم وجود خصائص، أضفها ثم أعد المحاولة مرة واحدة
+        missing = _extract_missing_props_from_error(e)
+        if missing:
+            _add_missing_properties(db_id, missing)
+            # حدّث أنواع الحقول بعد الإضافة
+            db = _retrieve_db(db_id)
+            prop_types.update(ensure_property_types(db))
+            props = build_props()
+            notion.pages.create(parent={"database_id": db_id}, properties=props)
+            return
+        raise
 
 def infer_db_title_from_filename(csv_path: str) -> str:
     return os.path.splitext(os.path.basename(csv_path))[0]
@@ -146,7 +175,6 @@ def infer_db_title_from_filename(csv_path: str) -> str:
 def sync_csv_to_db(db_title: str, csv_path: str) -> None:
     log(f"Syncing CSV → DB | {os.path.basename(csv_path)} -> {db_title}")
 
-    # اقرأ الرؤوس أولاً (حتى لو احتجنا لإنشاء DB)
     with open(csv_path, encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         headers = reader.fieldnames or []
