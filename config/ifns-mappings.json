@@ -1,0 +1,67 @@
+{
+  "notion_env": {
+    "token": "${{ secrets.NOTION_TOKEN }}",
+    "root_page_id": "${{ secrets.ROOT_PAGE_ID }}",
+    "archive_page_id": "${{ secrets.ARCHIVE_PAGE_ID }}"
+  },
+  "ifns": {
+    "root_title": "IFNS – The Intelligent Financial Neural System",
+    "pages": [
+      {
+        "title": "Conceptual Framework",
+        "source": "docs/ifns/Conceptual_Framework.md"
+      },
+      {
+        "title": "ML Operational Framework",
+        "source": "docs/ifns/Operational_Framework.md"
+      },
+      {
+        "title": "IFNS Main Dashboard – Wireframe",
+        "source": "docs/ifns/Wireframe.md"
+      },
+      {
+        "title": "Dashboard Analytics (Backtesting & Live Intelligence)",
+        "source": "docs/ifns/Dashboard_Analytics.md"
+      },
+      {
+        "title": "Reference Library",
+        "source": "docs/ifns/Reference_Library.md"
+      }
+    ],
+    "databases": [
+      {
+        "title": "System Layers Tracker",
+        "source": "sync/ifns/System_Layers_Tracker.csv"
+      },
+      {
+        "title": "Backtest Results Table",
+        "source": "sync/ifns/Backtest_Results_Table.csv"
+      },
+      {
+        "title": "Experiment Logs",
+        "source": "sync/ifns/Experiment_Logs.csv"
+      },
+      {
+        "title": "Model Registry",
+        "source": "sync/ifns/Model_Registry.csv"
+      },
+      {
+        "title": "Portfolio Matrix",
+        "source": "sync/ifns/Portfolio_Matrix.csv"
+      },
+      {
+        "title": "Execution API Log",
+        "source": "sync/ifns/Execution_API_Log.csv"
+      },
+      {
+        "title": "RiskAPI Alerts",
+        "source": "sync/ifns/RiskAPI_Alerts.csv"
+      }
+    ]
+  },
+  "policy": {
+    "archive_safe": true,
+    "stale_days": 60,
+    "duplicate_title_threshold": 84
+  }
+}
