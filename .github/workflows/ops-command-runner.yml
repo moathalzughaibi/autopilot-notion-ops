@@ -1,23 +1,75 @@
 name: Ops Command Runner
 
 on:
-  schedule:
-    - cron: "*/2 * * * *"   # كل دقيقتين
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      commands:
+        description: "أدخل أوامر التشغيل (أسطر متعددة)"
+        required: true
+        type: string
+        default: |
+          # مثال:
+          LIST_ROOT_DBS
+          LIST_DB_SCHEMA Autopilot_Architecture_Notes
 
 jobs:
-  run-ops:
+  run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install notion-client
-      - name: Execute commands from Notion queue
+
+      - name: Install deps
+        run: pip install notion-client
+
+      - name: Run ops commands
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
-          REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python notion/ops/command_runner.py
+          COMMANDS: ${{ github.event.inputs.commands }}
+        run: |
+          python - <<'PY'
+          import os
+          from notion_client import Client
+
+          cmds = os.environ.get("COMMANDS","").strip().splitlines()
+          token = os.environ["NOTION_TOKEN"]
+          root  = os.environ["ROOT_PAGE_ID"]
+          client = Client(auth=token)
+
+          def list_root_dbs():
+              pager = client.search(filter={"property":"object","value":"database"})
+              for db in pager["results"]:
+                  title = db.get("title",[{"plain_text":""}])[0]["plain_text"]
+                  print(f"- {title} | {db['id']}")
+
+          def list_db_schema(title):
+              resp = client.search(query=title, filter={"property":"object","value":"database"})
+              for db in resp["results"]:
+                  t = db.get("title",[{"plain_text":""}])[0]["plain_text"]
+                  if t==title:
+                      props = db.get("properties",{})
+                      print(f"[{t}] props: {list(props.keys())}")
+                      return
+              print(f"DB not found: {title}")
+
+          for line in cmds:
+              line=line.strip()
+              if not line or line.startswith("#"): 
+                  continue
+              parts=line.split()
+              cmd=parts[0].upper()
+              args=parts[1:]
+              print(f"[ops] running: {line}")
+              if cmd=="LIST_ROOT_DBS":
+                  list_root_dbs()
+              elif cmd=="LIST_DB_SCHEMA" and args:
+                  list_db_schema(" ".join(args))
+              else:
+                  print(f"Unknown command: {line}")
+          PY
