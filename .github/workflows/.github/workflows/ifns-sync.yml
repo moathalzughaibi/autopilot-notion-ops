@@ -1,0 +1,35 @@
+name: IFNS Sync
+on:
+  push:
+    paths:
+      - 'docs/ifns/**'
+      - 'sync/ifns/**'
+      - '.github/workflows/ifns-sync.yml'
+  workflow_dispatch:
+    inputs:
+      apply_archive:
+        description: 'Apply archive policy to stale IFNS pages'
+        type: boolean
+        default: false
+jobs:
+  sync-ifns:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests python-dateutil markdownify python-frontmatter pandas
+      - name: Run IFNS Sync
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+          ARCHIVE_PAGE_ID: ${{ secrets.ARCHIVE_PAGE_ID }}
+        run: python scripts/ifns_sync.py --config config/ifns-mappings.json
+      - name: Apply Archive Policy (optional)
+        if: ${{ inputs.apply_archive == 'true' }}
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+          ARCHIVE_PAGE_ID: ${{ secrets.ARCHIVE_PAGE_ID }}
+        run: python scripts/ifns_apply_archive_policy.py --config config/ifns-mappings.json
