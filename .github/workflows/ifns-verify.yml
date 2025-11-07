@@ -1,29 +1,26 @@
 name: IFNS Verify
-
 on:
-  workflow_dispatch: {}
   push:
-    paths:
-      - 'scripts/ifns_verify.py'
-      - '.github/workflows/ifns-verify.yml'
-
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install requests
-      - name: Run verification
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+
+      - name: Ensure single workflows directory
         run: |
-          python scripts/ifns_verify.py --root-title "IFNS – The Intelligent Financial Neural System" --out reports/ifns_verification_report.md
-      - name: Upload report
-        uses: actions/upload-artifact@v4
-        with:
-          name: ifns_verification_report
-          path: reports/ifns_verification_report.md
+          set -e
+          EXTRA=$(find .github -type d -name workflows -not -path "./.github/workflows" | wc -l)
+          if [ "$EXTRA" -gt 0 ]; then
+            echo "Found additional .github/**/workflows directories:"
+            find .github -type d -name workflows -not -path "./.github/workflows"
+            exit 1
+          fi
+          # Ensure at least one YAML workflow exists
+          ls .github/workflows/*.{yml,yaml} >/dev/null
+
+      - name: Lint workflows with actionlint
+        uses: rhysd/actionlint@v1
