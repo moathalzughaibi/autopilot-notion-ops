@@ -1,0 +1,25 @@
+{
+  "db_names": {
+    "incident_log": "Incident Log",
+    "reference_library_snapshots": "Weekly Snapshots"
+  },
+  "match": {
+    "types": [
+      "Export",
+      "Governance"
+    ],
+    "title_prefixes": [
+      "Export Failure - Heatmap Snapshot",
+      "Retention Exceeded - Weekly Snapshots"
+    ]
+  },
+  "email": {
+    "enabled": true,
+    "attach_files": true
+  },
+  "slack": {
+    "enabled": true,
+    "attachments_as_links": true
+  },
+  "state_file": ".webhook_state.json"
+}
