@@ -3,27 +3,38 @@ name: Notion Sync
 on:
   workflow_dispatch:
   push:
+    branches: [ main ]
     paths:
-      - 'content/databases/**/*.csv'
-      - 'content/databases/*.csv'
+      - "content/**"
+      - "schemas/**"
+      - "notion/sync/**"
+      - ".github/workflows/notion-sync.yml"
   schedule:
-    - cron: '*/30 * * * *'  # كل 30 دقيقة
+    - cron: "0 * * * *"   # كل ساعة
+
+permissions:
+  contents: read
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    concurrency:
-      group: notion-sync
-      cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - run: pip install notion-client
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install notion-client pyyaml markdown pandas python-frontmatter
+
       - name: Run sync to Notion
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
-          CONTENT_DIR: content/databases
-        run: python notion/sync/sync.py
+        run: |
+          python notion/sync/sync.py
