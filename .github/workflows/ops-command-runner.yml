@@ -1,3 +1,11 @@
+on:
+  workflow_dispatch:
+    inputs:
+      commands:
+        description: "One or more commands (newline-separated)"
+        required: true
+        default: "LIST_ROOT_DBS"
+
 # 1) اكتب ملف الوركفلو كاملاً (يحتوي workflow_dispatch + منطق الأوامر)
 cat > .github/workflows/ops-command-runner.yml <<'YML'
 name: Ops Command Runner
