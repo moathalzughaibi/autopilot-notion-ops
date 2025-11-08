@@ -1,13 +1,3 @@
-on:
-  workflow_dispatch:
-    inputs:
-      commands:
-        description: "One or more commands (newline-separated)"
-        required: true
-        default: "LIST_ROOT_DBS"
-
-# 1) اكتب ملف الوركفلو كاملاً (يحتوي workflow_dispatch + منطق الأوامر)
-cat > .github/workflows/ops-command-runner.yml <<'YML'
 name: Ops Command Runner
 
 on:
@@ -26,7 +16,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
+      - name: Install deps
+        run: pip install requests
       - name: Run Ops Commands
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
@@ -34,78 +25,21 @@ jobs:
           INPUT_COMMANDS: ${{ github.event.inputs.commands }}
         run: |
           python - <<'PY'
-          import os, json, requests, sys
+          import os, json, requests, re
 
-          token = os.environ["NOTION_TOKEN"]
-          root  = os.environ["ROOT_PAGE_ID"]
-          commands = os.environ.get("INPUT_COMMANDS","LIST_ROOT_DBS").splitlines()
-
-          H = {
-            "Authorization": f"Bearer {token}",
-            "Notion-Version": "2022-06-28",
-            "Content-Type": "application/json"
-          }
-
-          def create_db(title):
-              payload = {
-                "parent": {"type":"page_id","page_id": root},
-                "title": [{"type":"text","text":{"content": title}}],
-                "properties": {
-                  "Name": {"title": {}},
-                  "Created": {"date": {}},
-                  "Status": {"select": {"options": [
-                    {"name":"Active","color":"green"},
-                    {"name":"Resolved","color":"yellow"},
-                    {"name":"Archived","color":"red"}
-                  ]}}
-                }
-              }
-              r = requests.post("https://api.notion.com/v1/databases", headers=H, data=json.dumps(payload))
-              if r.ok:
-                  db = r.json()
-                  print(f"[+] Created database '{title}': {db['id'].replace('-','')}")
-              else:
-                  print(f"[!] Failed to create {title}: {r.status_code} -> {r.text}")
-
-          def list_root_dbs():
-              # نبحث عن قواعد البيانات في الورك سبيس (قد لا تكون كلها تحت الجذر مباشرة)
-              r = requests.post("https://api.notion.com/v1/search", headers=H, data=json.dumps({
-                "filter": {"property":"object","value":"database"},
-                "page_size": 100
-              }))
-              if r.ok:
-                  res = r.json()
-                  print("== ROOT DATABASES ==")
-                  for it in res.get("results",[]):
-                      title = it.get("title",[{"plain_text":"<no-title>"}])[0]["plain_text"]
-                      print(f"- {title} | {it['id'].replace('-','')}")
-              else:
-                  print(f"[!] Failed to list DBs: {r.status_code} -> {r.text}")
-
-          print(f"[ops] running {len(commands)} command(s)...")
-          for cmd in commands:
-              cmd = cmd.strip()
-              if not cmd: continue
-              if cmd.startswith("CREATE_DB"):
-                  _, name = cmd.split(" ",1)
-                  create_db(name.strip())
-              elif cmd == "LIST_ROOT_DBS":
-                  list_root_dbs()
-              else:
-                  print(f"[!] Unknown command: {cmd}")
+          H={"Authorization":f"Bearer {os.environ['NOTION_TOKEN']}",
+             "Notion-Version":"2022-06-28","Content-Type":"application/json"}
+          ROOT=os.environ["ROOT_PAGE_ID"]
+          CMD=[c.strip() for c in os.environ.get("INPUT_COMMANDS","").splitlines() if c.strip()]
+          def _s(x): return re.sub(r'[^0-9a-fA-F]','',x)
+          def create_db(t):
+              p={"parent":{"type":"page_id","page_id":ROOT},
+                 "title":[{"type":"text","text":{"content":t}}],
+                 "properties":{"Name":{"title":{}}}}
+              r=requests.post("https://api.notion.com/v1/databases",headers=H,data=json.dumps(p))
+              if r.ok: print(f"[+] Created database '{t}': {_s(r.json()['id'])}")
+              else: print(f"[!] Failed to create {t}: {r.status_code}->{r.text}")
+          for c in CMD:
+              if c.startswith("CREATE_DB"):
+                  _,n=c.split(" ",1); create_db(n)
           PY
-YML
-
-# 2) ادفع التعديل
-git add .github/workflows/ops-command-runner.yml
-git commit -m "fix(ci): enable workflow_dispatch and add Notion ops logic"
-git push
-
-# 3) أنشئ الجداول الثلاثة
-gh workflow run ops-command-runner.yml \
-  -f commands=$'CREATE_DB IFNS_Incident_Log\nCREATE_DB IFNS_Snapshot_Run_Log\nCREATE_DB IFNS_Narrative_AI_Insight_Log'
-
-# 4) اطبع اللوق واقتنص الـIDs
-sleep 8
-RID=$(gh run list --workflow ops-command-runner.yml -L 1 --json databaseId --jq '.[0].databaseId')
-gh run view "$RID" --log | grep -E "IFNS_Incident_Log|IFNS_Snapshot_Run_Log|IFNS_Narrative_AI_Insight_Log|== ROOT DATABASES =="
