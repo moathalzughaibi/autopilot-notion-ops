@@ -4,21 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       title:
-        description: 'Incident title'
+        description: "Incident title"
         required: true
-        default: 'Export Failure - Heatmap Snapshot (Test)'
       severity:
-        description: 'Severity select'
+        description: "Incident severity"
         required: true
-        default: 'Action'
       incident_type:
-        description: 'Incident Type select'
+        description: "Incident type"
         required: true
-        default: 'Export'
       summary:
-        description: 'Summary rich text'
+        description: "Incident summary"
         required: true
-        default: 'Test trigger for webhook'
 
 jobs:
   create-and-notify:
@@ -27,25 +23,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - run: pip install requests python-dateutil
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install requests python-dateutil
       - name: Create Test Incident in Notion
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
+          NOTION_INCIDENT_LOG_DB_ID: ${{ secrets.NOTION_INCIDENT_LOG_DB_ID }}
+          NOTION_SNAPSHOT_RUN_LOG_DB_ID: ${{ secrets.NOTION_SNAPSHOT_RUN_LOG_DB_ID }}
+          NOTION_NARRATIVE_AI_LOG_DB_ID: ${{ secrets.NOTION_NARRATIVE_AI_LOG_DB_ID }}
         run: |
-          python scripts/create_test_incident.py             --title "${{ github.event.inputs.title }}"             --severity "${{ github.event.inputs.severity }}"             --type "${{ github.event.inputs.incident_type }}"             --summary "${{ github.event.inputs.summary }}"
-      - name: Run Webhook Sender (Slack + Email)
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          ROOT_PAGE_ID: ${{ secrets.ROOT_PAGE_ID }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
-        run: |
-          python scripts/incident_webhook.py --config config/incident-webhook.json
-# reindex Fri Nov  7 16:06:19 UTC 2025
+          python scripts/create_test_incident.py \
+            --title "${{ github.event.inputs.title }}" \
+            --severity "${{ github.event.inputs.severity }}" \
+            --type "${{ github.event.inputs.incident_type }}" \
+            --summary "${{ github.event.inputs.summary }}"
