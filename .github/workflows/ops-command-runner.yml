@@ -1,3 +1,5 @@
+# 1) اكتب ملف الوركفلو كاملاً (يحتوي workflow_dispatch + منطق الأوامر)
+cat > .github/workflows/ops-command-runner.yml <<'YML'
 name: Ops Command Runner
 
 on:
@@ -84,3 +86,18 @@ jobs:
               else:
                   print(f"[!] Unknown command: {cmd}")
           PY
+YML
+
+# 2) ادفع التعديل
+git add .github/workflows/ops-command-runner.yml
+git commit -m "fix(ci): enable workflow_dispatch and add Notion ops logic"
+git push
+
+# 3) أنشئ الجداول الثلاثة
+gh workflow run ops-command-runner.yml \
+  -f commands=$'CREATE_DB IFNS_Incident_Log\nCREATE_DB IFNS_Snapshot_Run_Log\nCREATE_DB IFNS_Narrative_AI_Insight_Log'
+
+# 4) اطبع اللوق واقتنص الـIDs
+sleep 8
+RID=$(gh run list --workflow ops-command-runner.yml -L 1 --json databaseId --jq '.[0].databaseId')
+gh run view "$RID" --log | grep -E "IFNS_Incident_Log|IFNS_Snapshot_Run_Log|IFNS_Narrative_AI_Insight_Log|== ROOT DATABASES =="
