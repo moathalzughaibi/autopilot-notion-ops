@@ -1,6 +1,7 @@
 # create_test_incident.py
 import os
 import sys
+import re
 import argparse
 import requests
 
@@ -15,23 +16,38 @@ def headers(token: str) -> dict:
         "Content-Type": "application/json"
     }
 
+def normalize_db_id(dbid: str) -> str:
+    """
+    Normalize a 32-hex Notion DB ID into dashed form required by Notion API.
+    Example:
+      2a5b22c770d981d9a084e824ab1a84d0
+      -> 2a5b22c7-70d9-81d9-a084-e824ab1a84d0
+    If the input already contains dashes or isn't 32 hex chars, it's returned as-is.
+    """
+    if not dbid:
+        return dbid
+    clean = re.sub(r"[^0-9a-fA-F]", "", dbid)
+    if len(clean) == 32:
+        return f"{clean[0:8]}-{clean[8:12]}-{clean[12:16]}-{clean[16:20]}-{clean[20:]}"
+    return dbid
+
 def get_env_incident_db_id() -> str | None:
     """
     Prefer NOTION_INCIDENT_LOG_DB_ID; fallback to legacy INCIDENT_LOG_DB_ID.
+    Always return the dashed/normalized form compatible with Notion API.
     """
-    return os.environ.get("NOTION_INCIDENT_LOG_DB_ID") or os.environ.get("INCIDENT_LOG_DB_ID")
+    raw = os.environ.get("NOTION_INCIDENT_LOG_DB_ID") or os.environ.get("INCIDENT_LOG_DB_ID")
+    return normalize_db_id(raw) if raw else None
 
 def verify_db_access(token: str, db_id: str) -> bool:
     """
     Verify that a database id exists and is accessible.
     """
     try:
+        # ensure dashed form
+        db_id = normalize_db_id(db_id)
         r = requests.get(f"{API}/databases/{db_id}", headers=headers(token), timeout=TIMEOUT)
-        if r.ok:
-            return True
-        # Some Notion API clients return 404 when id format has dashes stripped incorrectly.
-        # Accept both dashed and non-dashed forms by trying to add dashes if missing.
-        return False
+        return r.ok
     except requests.RequestException:
         return False
 
@@ -51,7 +67,7 @@ def search_incident_db(token: str, query: str = "Incident Log") -> str | None:
             if res.get("object") == "database":
                 title = "".join([t.get("plain_text", "") for t in res.get("title", [])])
                 if query.lower() in (title or "").lower():
-                    return res["id"]
+                    return normalize_db_id(res["id"])
         return None
     except requests.RequestException as e:
         print(f"Search failed: {e}", file=sys.stderr)
@@ -78,7 +94,7 @@ def create_incident(token: str, db_id: str, title: str, severity: str, incident_
     r = requests.post(
         f"{API}/pages",
         headers=headers(token),
-        json={"parent": {"database_id": db_id}, "properties": props},
+        json={"parent": {"database_id": normalize_db_id(db_id)}, "properties": props},
         timeout=TIMEOUT,
     )
     r.raise_for_status()
@@ -133,29 +149,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-# --- add near the other imports ---
-import re
-# -----------------------------------
-
-def normalize_db_id(dbid: str) -> str:
-    """
-    Normalize a 32-hex Notion DB ID into dashed form required by Notion API.
-    Example:
-      2a5b22c770d981d9a084e824ab1a84d0
-      -> 2a5b22c7-70d9-81d9-a084-e824ab1a84d0
-    If the input already contains dashes or isn't 32 hex chars, it's returned as-is.
-    """
-    if not dbid:
-        return dbid
-    clean = re.sub(r"[^0-9a-fA-F]", "", dbid)
-    if len(clean) == 32:
-        return f"{clean[0:8]}-{clean[8:12]}-{clean[12:16]}-{clean[16:20]}-{clean[20:]}"
-    return dbid  # already dashed or unexpected length
-
-def get_env_incident_db_id() -> str | None:
-    """
-    Prefer NOTION_INCIDENT_LOG_DB_ID; fallback to legacy INCIDENT_LOG_DB_ID.
-    Always return the dashed/normalized form compatible with Notion API.
-    """
-    raw = os.environ.get("NOTION_INCIDENT_LOG_DB_ID") or os.environ.get("INCIDENT_LOG_DB_ID")
-    return normalize_db_id(raw) if raw else None
