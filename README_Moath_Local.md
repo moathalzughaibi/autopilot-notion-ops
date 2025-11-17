@@ -139,3 +139,40 @@ git commit -m "[feature] Short description"
 git push origin feature/short-name
 git tag -a v0.6 -m "IFNS v0.6 telemetry integration"
 git push origin v0.6
+### Notion smoke test (local)
+
+```powershell
+$env:NOTION_TOKEN = "..."           # from GitHub secret NOTION_TOKEN
+$env:NOTION_ROOT_PAGE_ID = "..."    # from NOTION_ROOT_PAGE_ID
+python .\scripts\notion_smoke_test.py
+## Local Notion connection (smoke test)
+
+To verify my local dev environment can talk to Notion using the same credentials
+as GitHub Actions:
+
+```powershell
+# In PowerShell at E:\GitHub\autopilot-notion-ops
+
+# 1) Set the Notion integration token (same value as the GitHub secret NOTION_TOKEN)
+$env:NOTION_TOKEN = "ntn_...<redacted>..."
+
+# 2) Set the Autopilot Hub root page id (same as NOTION_ROOT_PAGE_ID)
+$env:NOTION_ROOT_PAGE_ID = "29ab22c770d980918736f0dcad3bac83"
+
+# 3) Run the smoke test
+python .\scripts\notion_smoke_test.py
+## Sync IFNS Steps 01–02 from GitHub → Notion
+
+Pre-requisite (done once): `local_env/notion_env.ps1` holds my Notion token + root page ID
+and `local_env/` is ignored in git.
+
+To sync the content of Steps 01 and 02 into Notion:
+
+```powershell
+cd E:\GitHub\autopilot-notion-ops
+
+# Load local Notion env (NOTION_TOKEN, NOTION_ROOT_PAGE_ID)
+.\local_env\notion_env.ps1
+
+# Run the sync script
+python .\scripts\ifns_sync_steps_01_02.py
