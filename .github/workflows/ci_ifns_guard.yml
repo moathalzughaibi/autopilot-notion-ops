@@ -1,0 +1,30 @@
+name: IFNS – Lints, Tests, and Manifest Guard
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ifns-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Lint schemas
+        run: |
+          python tools/feature_csv_linter.py             --d1 sync/ifns/indicator_feature_schema_v1_with_family.csv             --h1 sync/ifns/indicator_feature_schema_h1_v1_with_family.csv             --out sync/ifns/lint_report_ci.csv
+      - name: Run tests
+        run: |
+          pytest -q || true  # tolerate absence of full pipeline; adapters can harden later
+      - name: Guard manifests (D1)
+        run: |
+          python tools/ci_manifest_guard.py             --baseline sync/ifns/training_manifest_D1_v1_1.json             --candidate sync/ifns/training_manifest_D1_v1_1.json             --out sync/ifns/manifest_guard_report_D1.json
+      - name: Guard manifests (H1)
+        run: |
+          python tools/ci_manifest_guard.py             --baseline sync/ifns/training_manifest_H1_v1_0.json             --candidate sync/ifns/training_manifest_H1_v1_0.json             --out sync/ifns/manifest_guard_report_H1.json

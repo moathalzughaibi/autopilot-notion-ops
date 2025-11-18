@@ -1,0 +1,737 @@
+{
+  "view": "H1_v1_0",
+  "created_at": "2025-11-18",
+  "horizon": "H1",
+  "frequency": "1h",
+  "alignment": "close_time",
+  "whitelist_path": "sync/ifns/feature_view_H1_v1_0.csv",
+  "schema_path": "sync/ifns/indicator_feature_schema_h1_v1.csv",
+  "whitelist_sha256": "21f70b04c3f3eea7ff2706b5c7633c56f6a4812af5bbc213c57150d60f689ae1",
+  "schema_sha256": "c4ef210e452e481417deb16c2926c499eecc9d0e90ccd94e37d620603b511d4e",
+  "columns": [
+    "FEAT.L1.RET_1H.H1",
+    "FEAT.L1.EMA20_VAL.H1",
+    "FEAT.L1.EMA20_SLOPE.H1",
+    "FEAT.L1.SMA50_SLOPE.H1",
+    "FEAT.L1.MACD_HIST.H1",
+    "FEAT.L1.MACD_SIGNAL.H1",
+    "FEAT.L1.ATR14_PCT.H1",
+    "FEAT.L1.PL20_PCT.H1",
+    "FEAT.L1.BOLL_Z20x2.H1",
+    "FEAT.L1.RSI14.H1",
+    "FEAT.L1.VOLUME_Z20.H1",
+    "FEAT.L2.BREAKOUT_D20_ATR_VOLCONF.H1",
+    "FEAT.L2.RSI14_REGIME_V1.H1",
+    "FEAT.L2.TREND_STRENGTH_MTF_V1.H1",
+    "FEAT.CTX.TREND_STATE",
+    "FEAT.CTX.PRICE_LOCATION_BIN",
+    "FEAT.CTX.STRUCTURE_STATE",
+    "FEAT.CTX.CANDLE_CLUSTER_ID"
+  ],
+  "columns_sha256": "4234283a2500a97cda02eba0d3204d37603c2ecf68a464c9a43b45572ea1940b",
+  "checks": {
+    "duplicate_columns": false,
+    "ctx_at_tail": true,
+    "all_exist_in_schema": true
+  },
+  "policy_defaults": {
+    "numeric": {
+      "min_coverage_pct": 0.975,
+      "max_na_pct": 0.025,
+      "drift_ks_p_min": 0.01,
+      "z_soft_clip": [
+        -7,
+        7
+      ]
+    },
+    "categorical": {
+      "min_cardinality": 3,
+      "max_single_class_pct": 0.9
+    },
+    "clip_policy": {
+      "method": "cap_and_log",
+      "max_clipped_pct_per_day": 0.005,
+      "log_event": "feat_softclip"
+    }
+  },
+  "per_feature_qc": {
+    "FEAT.L1.RET_1H.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "momentum",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "MOMENTUM"
+    },
+    "FEAT.L1.EMA20_VAL.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "momentum",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "MOMENTUM"
+    },
+    "FEAT.L1.EMA20_SLOPE.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "momentum",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "MOMENTUM"
+    },
+    "FEAT.L1.SMA50_SLOPE.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "momentum",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "MOMENTUM"
+    },
+    "FEAT.L1.MACD_HIST.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "momentum",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "MOMENTUM"
+    },
+    "FEAT.L1.MACD_SIGNAL.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "momentum",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "MOMENTUM"
+    },
+    "FEAT.L1.ATR14_PCT.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "volatility",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {
+        "raw_min": 0.0
+      },
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "VOLATILITY"
+    },
+    "FEAT.L1.PL20_PCT.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "trend",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          0.0,
+          1.0
+        ]
+      },
+      "value_exceptions": {
+        "raw_value_range": [
+          0.0,
+          1.0
+        ],
+        "post_scale_expected_range": [
+          0.0,
+          1.0
+        ],
+        "allow_out_of_range_tolerance": 0.01
+      },
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          0.0,
+          1.0
+        ],
+        "tolerance": 0.01,
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "TREND"
+    },
+    "FEAT.L1.BOLL_Z20x2.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "trend",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "TREND"
+    },
+    "FEAT.L1.RSI14.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "mean_reversion",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          0.0,
+          1.0
+        ]
+      },
+      "value_exceptions": {
+        "raw_value_range": [
+          0.0,
+          100.0
+        ],
+        "post_scale_expected_range": [
+          0.0,
+          1.0
+        ],
+        "allow_out_of_range_tolerance": 0.01
+      },
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          0.0,
+          1.0
+        ],
+        "tolerance": 0.01,
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "MEAN_REVERSION"
+    },
+    "FEAT.L1.VOLUME_Z20.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "tags": "volume",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "VOLUME"
+    },
+    "FEAT.L2.BREAKOUT_D20_ATR_VOLCONF.H1": {
+      "level": "L2",
+      "dtype": "float32",
+      "tags": "trend",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "TREND"
+    },
+    "FEAT.L2.RSI14_REGIME_V1.H1": {
+      "level": "L2",
+      "dtype": "float32",
+      "tags": "mean_reversion",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "MEAN_REVERSION"
+    },
+    "FEAT.L2.TREND_STRENGTH_MTF_V1.H1": {
+      "level": "L2",
+      "dtype": "float32",
+      "tags": "trend",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ],
+        "soft_clip": [
+          -7,
+          7
+        ]
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "log_event": "feat_softclip",
+        "max_clipped_pct_per_day": 0.005
+      },
+      "family": "TREND"
+    },
+    "FEAT.CTX.TREND_STATE": {
+      "level": "CTX",
+      "dtype": "string",
+      "tags": "context",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.95,
+        "max_na_pct": 0.08,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "categorical",
+        "min_cardinality": 3,
+        "max_single_class_pct": 0.9
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "none"
+      },
+      "family": "CONTEXT"
+    },
+    "FEAT.CTX.PRICE_LOCATION_BIN": {
+      "level": "CTX",
+      "dtype": "int8",
+      "tags": "context",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.95,
+        "max_na_pct": 0.08,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "categorical",
+        "min_cardinality": 3,
+        "max_single_class_pct": 0.9
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "none"
+      },
+      "family": "CONTEXT"
+    },
+    "FEAT.CTX.STRUCTURE_STATE": {
+      "level": "CTX",
+      "dtype": "string",
+      "tags": "context",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.95,
+        "max_na_pct": 0.08,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "categorical",
+        "min_cardinality": 3,
+        "max_single_class_pct": 0.9
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "none"
+      },
+      "family": "CONTEXT"
+    },
+    "FEAT.CTX.CANDLE_CLUSTER_ID": {
+      "level": "CTX",
+      "dtype": "int8",
+      "tags": "context",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.95,
+        "max_na_pct": 0.08,
+        "drift_alert": {
+          "test": "ks",
+          "window_days": 14,
+          "pvalue_min": 0.01
+        }
+      },
+      "values": {
+        "type": "categorical",
+        "min_cardinality": 3,
+        "max_single_class_pct": 0.9
+      },
+      "value_exceptions": {},
+      "clip_policy": {
+        "method": "none"
+      },
+      "family": "CONTEXT"
+    }
+  },
+  "family_breakdown": [
+    {
+      "family": "MOMENTUM",
+      "count": 6
+    },
+    {
+      "family": "CONTEXT",
+      "count": 4
+    },
+    {
+      "family": "TREND",
+      "count": 4
+    },
+    {
+      "family": "MEAN_REVERSION",
+      "count": 2
+    },
+    {
+      "family": "VOLATILITY",
+      "count": 1
+    },
+    {
+      "family": "VOLUME",
+      "count": 1
+    }
+  ]
+}

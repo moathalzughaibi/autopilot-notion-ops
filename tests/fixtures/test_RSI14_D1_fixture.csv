@@ -1,0 +1,6 @@
+timestamp,close,rsi14_raw,rsi14_minmax,expect_in_range_low,expect_in_range_high,expect_clip
+2025-06-17,170.0,45.0,0.45,True,True,False
+2025-06-18,169.5,52.0,0.52,True,True,False
+2025-06-19,171.2,65.0,0.65,True,True,False
+2025-06-20,172.0,75.0,0.75,True,True,False
+2025-06-23,171.8,55.0,0.55,True,True,False

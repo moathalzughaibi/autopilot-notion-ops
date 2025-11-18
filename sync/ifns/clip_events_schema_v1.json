@@ -1,0 +1,57 @@
+{
+  "event_name": "feat_softclip",
+  "version": 1,
+  "desc": "One record per soft-clip action applied to a feature value.",
+  "fields": [
+    {
+      "name": "timestamp",
+      "type": "string",
+      "format": "datetime",
+      "required": true
+    },
+    {
+      "name": "feature_id",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "asset",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "view",
+      "type": "string",
+      "required": false,
+      "desc": "e.g., D1_v1_1, H1_v1_0"
+    },
+    {
+      "name": "horizon",
+      "type": "string",
+      "required": false,
+      "desc": "D1/H1"
+    },
+    {
+      "name": "frequency",
+      "type": "string",
+      "required": false,
+      "desc": "1d/1h"
+    },
+    {
+      "name": "value_before",
+      "type": "number",
+      "required": false
+    },
+    {
+      "name": "value_after",
+      "type": "number",
+      "required": false
+    },
+    {
+      "name": "reason",
+      "type": "string",
+      "required": false,
+      "desc": "e.g., soft_clip [-6,6]"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "generated_on": "now",
+    "root_page_title": "IFNS \u2013 UI Master (V2)",
+    "notes": "IDs are filled by ifns_v2_create_dbs.py; edit typing_rules to override auto-typing."
+  },
+  "typing_rules": {
+    "feature_name": "title",
+    "indicator_id": "title",
+    "composite_id": "title",
+    "symbol": "title"
+  },
+  "databases": {
+    "FeatureSchemaV1": {
+      "path": "sync/ifns/indicator_feature_schema_v1_with_family.csv",
+      "primary_key": "feature_name",
+      "database_id": "6484618c-ca0b-4a31-9544-4ecf11d0df87"
+    },
+    "FeatureSchemaH1": {
+      "path": "sync/ifns/indicator_feature_schema_h1_v1_with_family.csv",
+      "primary_key": "feature_name",
+      "database_id": "dfe40c25-9e24-4928-8fa1-4bed6114ce9f"
+    },
+    "PolicyMatrix": {
+      "path": "sync/ifns/feature_policy_matrix.csv",
+      "primary_key": "",
+      "database_id": "9e48b82d-4d6a-4d2b-aa17-a88080bc35ac"
+    },
+    "FamilyMap": {
+      "path": "sync/ifns/feature_family_map.csv",
+      "primary_key": "feature_name",
+      "database_id": "e4562cd0-3d8a-4986-b72f-a9cf94b68e7e"
+    },
+    "UniverseP2": {
+      "path": "sync/ifns/indicators_universe_catalog_phase2.csv",
+      "primary_key": "symbol",
+      "database_id": "de828cc4-0b81-49fa-aa69-d328d6930779"
+    },
+    "CatalogL1": {
+      "path": "sync/ifns/indicators_catalog_L1_phase3.csv",
+      "primary_key": "indicator_id",
+      "database_id": "066b5cc5-6f8f-4f1b-aa10-59a351e608fa"
+    },
+    "CatalogL2L3": {
+      "path": "sync/ifns/indicators_catalog_L2L3_phase4.csv",
+      "primary_key": "composite_id",
+      "database_id": "ef3175fe-046d-47b8-8944-607d5bcf5d21"
+    },
+    "QCWeekly": {
+      "path": "sync/ifns/qc_weekly_schema_v1.json",
+      "primary_key": "entry_id",
+      "database_id": "cee29b9e-4071-45a5-bb9d-9a4f7b543ceb"
+    },
+    "CalendarGaps2025": {
+      "path": "sync/ifns/calendar_gaps_2025.json",
+      "primary_key": "event_id",
+      "database_id": ""
+    }
+  }
+}

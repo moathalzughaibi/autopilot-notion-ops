@@ -1,0 +1,11 @@
+merge_order,version,filename,bytes,sha256,notes
+1,v0.10,IFNS_Indicators_Pack_v0_10.zip,11242,f3adcb201636259567aba9ae83392f1b260c174ea3279a9e42cdd14e27ec3ff4,Soft clipping + holiday YAMLs
+2,v0.11,IFNS_Indicators_Pack_v0_11.zip,4067,85baf0861b147510a604fd562541ea034801eacc6dfdf11e7bbbbc0767322f45,Policy matrix + unit-test fixtures
+3,v0.12,IFNS_Indicators_Pack_v0_12.zip,3373,207182423eac81937a81d75cea44dadbb5b15169d1db922f9dfee9b43ab7d667,Feature→family map + pytest starter
+4,v0.13,IFNS_Indicators_Pack_v0_13.zip,6000,4cd78db4603a8af42c6c1d75528c2f67768d2d453697be21c4cd9e3c9f941419,Schemas with family + Phase readiness checklists
+5,v0.14,IFNS_Indicators_Pack_v0_14.zip,6433,391f18aaf661806ba595813758efa0f1b1c6c0e319cffd4a112bd52c5f3eb165,Manifests carry family + CSV linter + lint reports
+6,v0.15,IFNS_Indicators_Pack_v0_15.zip,3866,9d58b4e9b439f65034ea0a46f559e0b186cfe4e915a47b993302197725711827,Weekly QC telemetry schema + manifest diff tool
+7,v0.16,IFNS_Indicators_Pack_v0_16.zip,5618,3bdac9aa24b29763d6514ce76e6d3d6abd9bbb165a24eafec0223d532f76807c,QC Weekly ETL skeleton + CI guard + GH workflow
+8,v0.17,IFNS_Indicators_Pack_v0_17.zip,4809,b334bb87a86df50276dc777a39b394568afbdbad5ed429b1fffaeb7e11dff02e,ETL reads clip-event logs + clip budgets
+9,v0.18,IFNS_Indicators_Pack_v0_18.zip,6030,80409d2524368782b662d81931b3029c86d3e74b4c34e4bb0e4004bafa639faa,IO utilities + synthetic inputs + demos
+10,v0.18,IFNS_Indicators_Quickstart_v0_18.md,6812,b3fb2e0f1a7ea1d5fb11217585d081ac835b0c69ee7c376a41d8b102001b3c6c,Quickstart README

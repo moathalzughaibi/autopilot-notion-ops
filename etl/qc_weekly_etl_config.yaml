@@ -1,0 +1,6 @@
+# etl/qc_weekly_etl_config.yaml
+manifest: sync/ifns/training_manifest_H1_v1_0.json
+calendar: sync/ifns/calendar_gaps_2025.json
+input_glob: data/h1/xnas_msft/*.parquet   # or *.csv
+week_end: 2025-11-28
+out: sync/ifns/qc_weekly_2025-11-28.ndjson

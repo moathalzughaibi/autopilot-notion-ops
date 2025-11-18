@@ -1,0 +1,5 @@
+feature_id,level,family,dtype,type,scaling,horizon,frequency,tags
+FEAT.L1.RET_1H.H1,L1,MOMENTUM,float32,numeric,z,H1,1h,momentum
+FEAT.L1.BOLL_Z20x2.H1,L1,TREND,float32,numeric,z,H1,1h,trend
+FEAT.L1.RSI14.H1,L1,MEAN_REVERSION,float32,numeric,minmax,H1,1h,mean_reversion
+FEAT.CTX.PRICE_LOCATION_BIN,CTX,CONTEXT,int32,categorical,,H1,1h,context

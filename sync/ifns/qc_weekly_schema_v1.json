@@ -1,0 +1,131 @@
+{
+  "event_name": "QC_WEEKLY_SUMMARY_V1",
+  "version": 1,
+  "description": "Weekly rollup of feature-view health (coverage, NA, drift, clipping), including family-level breakdowns.",
+  "fields": [
+    {
+      "name": "ts_week_end",
+      "type": "string",
+      "format": "date",
+      "required": true,
+      "desc": "ISO date for week ending (YYYY-MM-DD)."
+    },
+    {
+      "name": "view",
+      "type": "string",
+      "enum": [
+        "D1_v1_1",
+        "H1_v1_0"
+      ],
+      "required": true,
+      "desc": "Feature view identifier as in manifests."
+    },
+    {
+      "name": "horizon",
+      "type": "string",
+      "required": true,
+      "desc": "H1 or D1"
+    },
+    {
+      "name": "frequency",
+      "type": "string",
+      "required": true,
+      "desc": "1h or 1d"
+    },
+    {
+      "name": "manifest_sha256",
+      "type": "string",
+      "required": true,
+      "desc": "SHA-256 of the training manifest used this week."
+    },
+    {
+      "name": "row_count",
+      "type": "integer",
+      "required": true,
+      "desc": "Rows produced this week for the view."
+    },
+    {
+      "name": "integrity_pct",
+      "type": "number",
+      "required": true,
+      "desc": "Proportion of expected rows present (post-calendar)."
+    },
+    {
+      "name": "coverage_pct_mean",
+      "type": "number",
+      "required": true,
+      "desc": "Mean per-feature coverage across the week."
+    },
+    {
+      "name": "max_na_pct_any_feature",
+      "type": "number",
+      "required": true,
+      "desc": "Maximum NA% observed for any feature."
+    },
+    {
+      "name": "drift_alerts_count",
+      "type": "integer",
+      "required": true,
+      "desc": "Total drift alerts triggered across features."
+    },
+    {
+      "name": "clip_events_pct",
+      "type": "number",
+      "required": true,
+      "desc": "Percentage of values soft-clipped (all features combined)."
+    },
+    {
+      "name": "clip_budget_violations",
+      "type": "integer",
+      "required": true,
+      "desc": "Count of days where clip rate exceeded budget."
+    },
+    {
+      "name": "family_breakdown",
+      "type": "array",
+      "required": true,
+      "items": {
+        "type": "object",
+        "fields": [
+          {
+            "name": "family",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "feature_count",
+            "type": "integer",
+            "required": true
+          },
+          {
+            "name": "coverage_pct_mean",
+            "type": "number",
+            "required": true
+          },
+          {
+            "name": "max_na_pct",
+            "type": "number",
+            "required": true
+          },
+          {
+            "name": "drift_alerts",
+            "type": "integer",
+            "required": true
+          },
+          {
+            "name": "clip_events_pct",
+            "type": "number",
+            "required": true
+          }
+        ]
+      },
+      "desc": "Rollup metrics per feature family for the week."
+    },
+    {
+      "name": "notes",
+      "type": "string",
+      "required": false,
+      "desc": "Optional human notes or incident IDs."
+    }
+  ]
+}

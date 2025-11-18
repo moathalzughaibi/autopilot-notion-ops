@@ -1,0 +1,16 @@
+family,level,slice,min_coverage_pct,max_na_pct,drift_window_days,z_soft_clip_low,z_soft_clip_high,minmax_tolerance,raw_min,raw_max,notes
+MOMENTUM,L1,D1,0.985,0.015,30,-6,6,,,,"RET, EMA/MA slopes, MACD"
+MOMENTUM,L1,H1,0.975,0.025,14,-7,7,,,,"RET_1H, EMA/MA slopes (hourly)"
+TREND,L1,D1,0.985,0.015,30,-6,6,,,,"Price location %, trend state inputs"
+TREND,L1,H1,0.975,0.025,14,-7,7,,,,Hourly trend equivalents
+VOLATILITY,L1,D1,0.985,0.015,30,-6,6,,0.0,,"ATR %, Realized vol (non-negative)"
+VOLATILITY,L1,H1,0.975,0.025,14,-7,7,,0.0,,ATR % (non-negative)
+VOLUME,L1,D1,0.985,0.015,30,-6,6,,0.0,,Volume Z (raw non-negative volume)
+MEAN_REVERSION_BOUND,L1,D1,0.985,0.015,30,,,,0.0,100.0,RSI/STOCHK bounded raw; minmax post-scale
+MEAN_REVERSION_BOUND,L1,H1,0.975,0.025,14,,,,0.0,100.0,RSI bounded raw; minmax post-scale
+BREAKOUT,L2,D1,0.985,0.015,30,-6,6,,,,Donchian/ATR/Volume composites
+BREAKOUT,L2,H1,0.975,0.025,14,-7,7,,,,Intraday breakout composite
+COMPOSITE,L3,D1,0.985,0.015,30,-6,6,,,,"Weighted composites (breakout confirm, MR aware)"
+COMPOSITE,L3,H1,0.975,0.025,14,-7,7,,,,Intraday composites
+CONTEXT,CTX,D1,0.97,0.05,30,,,,,,"Categorical; ensure cardinality≥3, max_class≤0.9"
+CONTEXT,CTX,H1,0.95,0.08,14,,,,,,Categorical (hourly labelling)

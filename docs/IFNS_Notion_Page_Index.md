@@ -43,3 +43,37 @@
 | 30 | <Phase 4 Page 1 Title>      | TBD_P4_PAGE1_ID   | Tables & Telemetry (DB Hub) |  | Phase 4 spec page (see matching .md in `docs/ifns/tables`). | Auto-synced. |
 | 31 | <Phase 4 Page 2 Title>      | TBD_P4_PAGE2_ID   | Tables & Telemetry (DB Hub) |  | Phase 4 spec page (see matching .md in `docs/ifns/tables`). | Auto-synced. |
 | 32 | <Phase 4 Page 3 Title>      | TBD_P4_PAGE3_ID   | Tables & Telemetry (DB Hub) |  | Phase 4 spec page (see matching .md in `docs/ifns/tables`). | Auto-synced. |
+
+| 33 | Tables & Telemetry (DB Hub) | 2afb22c7-70d9-81bf-84ee-d2edab2733e6 | IFNS  UI Master |  | Hub for CSV-backed databases and telemetry specs (Phase 4). | Child pages synced from `docs/ifns/tables` via `ifns_sync_tables_phase4.py`. |
+| 34 | IFNS Core Registry v1 Seeds | 2afb22c7-70d9-8185-a13c-d470249a1aa1 | Tables & Telemetry (DB Hub) |  | Phase 4 spec page under Tables & Telemetry (DB Hub). | Auto-synced from matching file in `docs/ifns/tables`. |
+
+| 35 | IFNS Core Tables Phase4 v0 1 | 2afb22c7-70d9-813f-a45b-cba65bbbeb7d | Tables & Telemetry (DB Hub) |  | Phase 4 spec page under Tables & Telemetry (DB Hub). | Auto-synced from matching file in `docs/ifns/tables`. |
+| 36 | IFNS Phase4 Mapping v0 1 | 2afb22c7-70d9-817f-979e-efb0ed706318 | Tables & Telemetry (DB Hub) |  | Phase 4 spec page under Tables & Telemetry (DB Hub). | Auto-synced from matching file in `docs/ifns/tables`. |
+
+| 37 | Stock Indicator System – Master Index | 2afb22c7-70d9-8195-b044-db33b7ca5d4a | Core ML Build Stages |  | Master index for the Stock Indicator System (Phases 17) under Core ML Build Stages. | Content synced from `docs/ifns/indicators/Indicators_Master_Index_*.md` via `ifns_sync_indicators_docs.py`. |
+| 38 | Phase 1  Indicator Taxonomy & Governance | 2afb22c7-70d9-81e4-9ef3-f9cf13ff7091 | Stock Indicator System – Master Index |  | Indicator phase spec page (see matching .md in `docs/ifns/indicators`). | Auto-synced. |
+| 39 | Phase 2  Indicator Universe Draft | 2afb22c7-70d9-81ba-85da-e085cb718f0c | Stock Indicator System – Master Index |  | Indicator phase spec page (see matching .md in `docs/ifns/indicators`). | Auto-synced. |
+| 40 | Phase 3  L1 Indicator Catalog | 2afb22c7-70d9-8129-ae6d-df231734a849 | Stock Indicator System – Master Index |  | Indicator phase spec page (see matching .md in `docs/ifns/indicators`). | Auto-synced. |
+| 41 | Phase 4  L2/L3 Framework Catalog | 2afb22c7-70d9-8132-a06a-eefd4789433d | Stock Indicator System – Master Index |  | Indicator phase spec page (see matching .md in `docs/ifns/indicators`). | Auto-synced. |
+| 42 | Phase 5  Feature Output & Digitization Schema | 2afb22c7-70d9-815e-8c59-ce15a4474094 | Stock Indicator System – Master Index |  | Indicator phase spec page (see matching .md in `docs/ifns/indicators`). | Auto-synced. |
+| 43 | Phase 6  Implementation & Runtime Templates | 2afb22c7-70d9-816c-9e3d-e7cad6a308a9 | Stock Indicator System – Master Index |  | Indicator phase spec page (see matching .md in `docs/ifns/indicators`). | Auto-synced. |
+| 44 | Phase 7  ML Integration & Operationalization | 2afb22c7-70d9-810f-a328-df8b443e2899 | Stock Indicator System – Master Index |  | Indicator phase spec page (see matching .md in `docs/ifns/indicators`). | Auto-synced. |
+
+## Notion DB build-out snapshot (2025-11-18T13:02:03.307775Z)
+- **FeatureSchemaV1**  `sync/ifns/indicator_feature_schema_v1_with_family.csv` (pk: `feature_name`)  DB: `6484618c-ca0b-4a31-9544-4ecf11d0df87`
+- **FeatureSchemaH1**  `sync/ifns/indicator_feature_schema_h1_v1_with_family.csv` (pk: `feature_name`)  DB: `dfe40c25-9e24-4928-8fa1-4bed6114ce9f`
+- **PolicyMatrix**  `sync/ifns/feature_policy_matrix.csv` (pk: ``)  DB: `9e48b82d-4d6a-4d2b-aa17-a88080bc35ac`
+- **FamilyMap**  `sync/ifns/feature_family_map.csv` (pk: `feature_name`)  DB: `e4562cd0-3d8a-4986-b72f-a9cf94b68e7e`
+- **UniverseP2**  `sync/ifns/indicators_universe_catalog_phase2.csv` (pk: `symbol`)  DB: `de828cc4-0b81-49fa-aa69-d328d6930779`
+- **CatalogL1**  `sync/ifns/indicators_catalog_L1_phase3.csv` (pk: `indicator_id`)  DB: `066b5cc5-6f8f-4f1b-aa10-59a351e608fa`
+- **CatalogL2L3**  `sync/ifns/indicators_catalog_L2L3_phase4.csv` (pk: `composite_id`)  DB: `ef3175fe-046d-47b8-8944-607d5bcf5d21`
+- **QCWeekly**  `sync/ifns/qc_weekly_schema_v1.json` (pk: `entry_id`)  DB: `cee29b9e-4071-45a5-bb9d-9a4f7b543ceb`
+- **CalendarGaps2025**  `sync/ifns/calendar_gaps_2025.json` (pk: `event_id`)  DB: ``
+
+## Notion DB build-out snapshot (2025-11-18T13:05:06.753632Z)
+
+## Notion DB build-out snapshot (2025-11-18T13:09:23.512723Z)
+
+## Notion DB build-out snapshot (2025-11-18T13:17:09.617062Z)
+
+## Notion DB build-out snapshot (2025-11-18T13:41:30.288540Z)

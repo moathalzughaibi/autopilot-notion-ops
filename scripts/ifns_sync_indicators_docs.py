@@ -1,23 +1,30 @@
 ﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-IFNS - Sync Phase 4 Tables & Telemetry specs (GitHub -> Notion).
+IFNS - Sync Indicator Docs (Phases 1–7) into Notion.
 
-Structure in Notion:
+Notion structure:
 
-IFNS – UI Master
-  -> Tables & Telemetry (DB Hub)
-       -> <one child page per file in docs/ifns/tables>
+IFNS  UI Master
+  -> Core ML Build Stages
+       -> Stock Indicator System  Master Index
+            -> Phase 1  Indicator Taxonomy & Governance
+            -> Phase 2  Indicator Universe Draft
+            -> Phase 3  L1 Indicator Catalog
+            -> Phase 4  L2/L3 Framework Catalog
+            -> Phase 5  Feature Output & Digitization Schema
+            -> Phase 6  Implementation & Runtime Templates
+            -> Phase 7  ML Integration & Operationalization
 
-Each child page receives either:
-- The full markdown/text content (for .md/.txt), or
-- A short stub pointing to the binary file (for .xlsx, etc.).
+Sources in Git:
+
+docs/ifns/indicators/*.md
 """
 
 import os
 import sys
 from pathlib import Path
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Dict
 from collections import deque
 
 import requests
@@ -40,8 +47,9 @@ HEADERS = {
 }
 
 IFNS_MASTER_TITLE = "IFNS \u2013 UI Master"
-TABLES_HUB_TITLE = "Tables & Telemetry (DB Hub)"
-TABLES_DIR = Path("docs/ifns/tables")
+COREML_HUB_TITLE = "Core ML Build Stages"
+INDICATORS_MASTER_TITLE = "Stock Indicator System \u2013 Master Index"
+INDICATORS_DIR = Path("docs/ifns/indicators")
 
 
 def get_children_blocks(block_id: str) -> List[dict]:
@@ -142,11 +150,11 @@ def clear_page_content(page_id: str) -> None:
             print(resp.text, file=sys.stderr)
 
 
-def chunk_text(text: str, max_len: int = 1500):
-    chunks = []
-    current = []
+def chunk_text(text: str, max_len: int = 1500) -> List[str]:
+    chunks: List[str] = []
+    current: List[str] = []
     current_len = 0
-    for line in text.splitlines(True):  # keep line breaks
+    for line in text.splitlines(True):
         if current_len + len(line) > max_len and current:
             chunks.append("".join(current))
             current = [line]
@@ -185,81 +193,72 @@ def write_page_markdown(page_id: str, md_text: str) -> None:
     print(f"    -> Content updated ({total_chars} chars in {len(chunks)} block(s))")
 
 
-def pretty_title_from_stem(stem: str) -> str:
-    return stem.replace("_", " ").strip()
-
-
-def build_stub_for_binary(path: Path, title: str) -> str:
-    return f"""# {title}
-
-This page represents a binary table file in the Git repo.
-
-- **File name:** `{path.name}`
-- **Path in repo:** `docs/ifns/tables/{path.name}`
-
-Use this page to document:
-- The table purpose (what this dataset is for)
-- Column definitions (name, type, meaning, units)
-- Any constraints or relationships (primary keys, foreign keys)
-- How this table maps into Notion databases in Phase 4.
-
-The actual data (seeds) lives in the Excel file above.
-"""
+def find_file_by_token(token: str) -> Optional[Path]:
+    token_lower = token.lower()
+    for p in INDICATORS_DIR.glob("*.*"):
+        if token_lower in p.name.lower():
+            return p
+    return None
 
 
 def main() -> None:
-    print("IFNS - Sync Phase 4 Tables & Telemetry (GitHub -> Notion)")
+    print("IFNS - Sync Indicator Docs (Phases 17)")
     print(f"Root page id: {NOTION_ROOT_PAGE_ID}")
-    print(f"Looking for '{IFNS_MASTER_TITLE}' under root...")
 
+    if not INDICATORS_DIR.exists():
+        print(f"ERROR: indicators dir not found at {INDICATORS_DIR}", file=sys.stderr)
+        sys.exit(1)
+
+    # Find IFNS  UI Master
     master_id = find_child_page_recursive(NOTION_ROOT_PAGE_ID, IFNS_MASTER_TITLE, max_depth=4)
     if not master_id:
         print(f"ERROR: Could not find '{IFNS_MASTER_TITLE}' under root {NOTION_ROOT_PAGE_ID}", file=sys.stderr)
         sys.exit(1)
     print(f"Found IFNS  UI Master page id: {master_id}")
 
-    if not TABLES_DIR.exists():
-        print(f"ERROR: Tables dir not found at {TABLES_DIR}", file=sys.stderr)
+    # Find Core ML hub
+    coreml_id = find_child_page_recursive(master_id, COREML_HUB_TITLE, max_depth=3)
+    if not coreml_id:
+        print(f"ERROR: Could not find '{COREML_HUB_TITLE}' under IFNS  UI Master.", file=sys.stderr)
         sys.exit(1)
+    print(f"Found Core ML Build Stages hub id: {coreml_id}")
 
-    # Ensure hub
-    hub_id = ensure_child_page(master_id, TABLES_HUB_TITLE)
+    # Ensure master indicators page
+    indicators_master_id = ensure_child_page(coreml_id, INDICATORS_MASTER_TITLE)
 
-    # Discover ALL files under docs/ifns/tables (any extension)
-    files = [p for p in TABLES_DIR.iterdir() if p.is_file()]
-    print(f"Found {len(files)} file(s) in {TABLES_DIR}:")
-    for f in files:
-        print(f"  - {f.name}")
+    # Map files
+    master_file = find_file_by_token("Master_Index")
+    if master_file is None:
+        print("!! Could not find Indicators_Master_Index file (token 'Master_Index').", file=sys.stderr)
+    else:
+        print(f"\n=== Syncing master index from '{master_file}' ===")
+        clear_page_content(indicators_master_id)
+        md = master_file.read_text(encoding="utf-8")
+        write_page_markdown(indicators_master_id, md)
 
-    if not files:
-        print(f"WARNING: No files found under {TABLES_DIR}")
-        print("\nDone.")
-        return
+    phase_configs = [
+        ("Phase 1  Indicator Taxonomy & Governance", "Taxonomy"),
+        ("Phase 2  Indicator Universe Draft", "Universe"),
+        ("Phase 3  L1 Indicator Catalog", "L1_Catalog"),
+        ("Phase 4  L2/L3 Framework Catalog", "L2L3"),
+        ("Phase 5  Feature Output & Digitization Schema", "Feature_Schem"),
+        ("Phase 6  Implementation & Runtime Templates", "Implementatio"),
+        ("Phase 7  ML Integration & Operationalization", "ML_Integratio"),
+    ]
 
-    # Sync each file as a child under the hub
-    for path in sorted(files, key=lambda x: x.name.lower()):
-        stem = path.stem
-        title = pretty_title_from_stem(stem)
-        print(f"\n=== Syncing file '{path}' -> page '{title}' ===")
-        page_id = ensure_child_page(hub_id, title)
+    for title, token in phase_configs:
+        print(f"\n=== Syncing {title} (token '{token}') ===")
+        f = find_file_by_token(token)
+        if f is None:
+            print(f"  !! No file found in {INDICATORS_DIR} matching token '{token}', skipping.", file=sys.stderr)
+            continue
+        print(f"  -> Using file '{f.name}'")
+        page_id = ensure_child_page(indicators_master_id, title)
         if not page_id:
             continue
-
         clear_page_content(page_id)
-
-        ext = path.suffix.lower()
-        if ext in {".md", ".txt"}:
-            # Text-like file: read as UTF-8
-            try:
-                md_text = path.read_text(encoding="utf-8")
-            except UnicodeDecodeError as e:
-                print(f"  !! Unicode error reading {path.name} as UTF-8, falling back to stub. {e}")
-                md_text = build_stub_for_binary(path, title)
-        else:
-            # Binary file (e.g. .xlsx) -> stub content
-            md_text = build_stub_for_binary(path, title)
-
-        write_page_markdown(page_id, md_text)
+        md = f.read_text(encoding="utf-8")
+        write_page_markdown(page_id, md)
 
     print("\nDone.")
 

@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "date": "2025-11-18",
+    "calendar_file": "sync/ifns/calendar_gaps_2025.json",
+    "clip_budget_max_pct_per_day": 0.005
+  },
+  "fixtures": {
+    "test_RSI14_D1_fixture.csv": {
+      "feature_id": "FEAT.L1.RSI14.D1",
+      "expect": {
+        "raw_range": [
+          0,
+          100
+        ],
+        "post_scale_range": [
+          0,
+          1
+        ],
+        "no_clip": true,
+        "coverage_pct_min": 0.985
+      }
+    },
+    "test_BOLL_Z20x2_D1_fixture.csv": {
+      "feature_id": "FEAT.L1.BOLL_Z20x2.D1",
+      "expect": {
+        "z_soft_clip": [
+          -6,
+          6
+        ],
+        "clip_events_expected": true
+      }
+    },
+    "test_ATR14_PCT_D1_fixture.csv": {
+      "feature_id": "FEAT.L1.ATR14_PCT.D1",
+      "expect": {
+        "raw_min": 0.0
+      }
+    },
+    "test_RET_1H_H1_fixture.csv": {
+      "feature_id": "FEAT.L1.RET_1H.H1",
+      "expect": {
+        "calendar_respects_early_close": "2025-11-28",
+        "closed_days_absent": [
+          "2025-11-27"
+        ]
+      }
+    },
+    "test_CTX_PRICE_LOCATION_BIN_H1_fixture.csv": {
+      "feature_id": "FEAT.CTX.PRICE_LOCATION_BIN",
+      "expect": {
+        "min_cardinality_ge": 3,
+        "max_single_class_pct_le": 0.9
+      }
+    }
+  }
+}

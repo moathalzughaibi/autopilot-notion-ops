@@ -1,0 +1,7 @@
+severity,file,feature_id,code,message
+WARN,schema_D1_with_family,FEAT.L2.RSI14_REGIME_V1.D1,SCALING_EXPECT_MINMAX,FEAT.L2.RSI14_REGIME_V1.D1 usually minmax-scaled; found z
+WARN,schema_H1_with_family,FEAT.L2.RSI14_REGIME_V1.H1,SCALING_EXPECT_MINMAX,FEAT.L2.RSI14_REGIME_V1.H1 usually minmax-scaled; found z
+WARN,MULTI,FEAT.CTX.CANDLE_CLUSTER_ID,DUPLICATE_ID,feature_id appears 2 times across schemas
+WARN,MULTI,FEAT.CTX.PRICE_LOCATION_BIN,DUPLICATE_ID,feature_id appears 2 times across schemas
+WARN,MULTI,FEAT.CTX.STRUCTURE_STATE,DUPLICATE_ID,feature_id appears 2 times across schemas
+WARN,MULTI,FEAT.CTX.TREND_STATE,DUPLICATE_ID,feature_id appears 2 times across schemas

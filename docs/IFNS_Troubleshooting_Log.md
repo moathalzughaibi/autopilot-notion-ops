@@ -190,3 +190,121 @@ Whenever we hit a new “trap”, I’ll keep giving you a ready **log entry blo
 | **Fix** | Implemented `scripts/ifns_sync_tables_phase4.py` to discover all `.md` files in `docs/ifns/tables`, ensure a matching page under `Tables & Telemetry (DB Hub)`, archive old content blocks, and push the full markdown as paragraphs. |
 | **Prevent / lessons** | 1) Keep Phase 4 files isolated in `docs/ifns/tables` so the script can discover them cleanly. 2) Use a dedicated hub (`Tables & Telemetry (DB Hub)`) to avoid mixing DB specs with Steps/Stages. 3) After each sync, update IFNS_Notion_Page_Index.md and this log. |
 | **Commands** | `.\local_env\notion_env.ps1` then `python .\scripts\ifns_sync_tables_phase4.py`. |
+
+## 2025-11-18  Indicator System (Phases 17) docs sync
+
+| Field    | Details |
+|---------|---------|
+| **Area** | Indicator System docs (Phases 17) under Core ML Build Stages |
+| **Symptom** | N/A (design + initial sync). The indicator docs for Phases 17 and the master index are now synced from Git (`docs/ifns/indicators`) into Notion under `Stock Indicator System  Master Index`. |
+| **Context** | Indicator spec files are stored as Markdown under `docs/ifns/indicators`. `ifns_sync_indicators_docs.py` finds IFNS  UI Master, Core ML Build Stages, then ensures `Stock Indicator System  Master Index` and its phase child pages, replacing their content from the Git-backed files. |
+| **Root cause** | Need a dedicated, structured home in Notion for all indicator-system documentation that ties directly into the Core ML Build Stages spine. |
+| **Fix** | Implemented `scripts/ifns_sync_indicators_docs.py` and `scripts/ifns_update_index_and_log_indicators.py` so indicator docs can be safely round-tripped between Git and Notion with clear indexing and audit trail. |
+| **Prevent / lessons** | 1) Keep doc files grouped under `docs/ifns/indicators` with stable naming. 2) Use a single master page (`Stock Indicator System  Master Index`) with phase child pages for navigation. 3) Always run the index/log updater after structural changes so future agents have a reliable map. |
+| **Commands** | `.\local_env\notion_env.ps1` then `python .\scripts\ifns_sync_indicators_docs.py` and `python .\scripts\ifns_update_index_and_log_indicators.py`. |
+## 2025-11-18 – Seed IFNS V2 Manifests, Telemetry & Runtime
+
+**Script:** `scripts/ifns_v2_sync_manifests_qc_runtime.py`  
+**Command:** `python .\scripts\ifns_v2_sync_manifests_qc_runtime.py`
+
+**Scope:**
+- Target root: `IFNS – UI Master (V2)` in Notion (root page id = `29ab22c770d980918736f0dcad3bac83`).
+- Sections wired:
+  - `Manifests & Policy`
+  - `Telemetry & QC`
+  - `Runtime Templates & Calendars`
+
+**What the script created (all as stub pages pointing back to Git files):**
+
+- **Manifests & Policy**
+  - `Indicator Feature Schema v1 (with family)` → `sync/ifns/indicator_feature_schema_v1_with_family.csv`
+  - `Indicator Feature Schema H1 v1 (with family)` → `sync/ifns/indicator_feature_schema_h1_v1_with_family.csv`
+  - `Feature Policy Matrix` → `sync/ifns/feature_policy_matrix.csv`
+  - `Feature Family Map` → `sync/ifns/feature_family_map.csv`
+  - `Indicators – Universe Catalog (Phase 2 Draft)` → `sync/ifns/indicators_universe_catalog_phase2.csv`
+  - `Indicators – L1 Catalog (Phase 3)` → `sync/ifns/indicators_catalog_L1_phase3.csv`
+  - `Indicators – L2/L3 Framework Catalog (Phase 4)` → `sync/ifns/indicators_catalog_L2L3_phase4.csv`
+
+- **Telemetry & QC**
+  - `QC Weekly Schema v1` → `sync/ifns/qc_weekly_schema_v1.json`
+  - `QC Weekly Example v1` → `sync/ifns/qc_weekly_example_v1.ndjson`
+  - `QC Weekly Telemetry V1 (Doc)` → `docs/ifns/indicators/QC_Weekly_Telemetry_V1.md`
+  - `QC Weekly ETL Skeleton` → `docs/ifns/indicators/QC_Weekly_ETL_Skeleton.md`
+  - `QC Weekly ETL Clip Integration` → `docs/ifns/indicators/QC_Weekly_ETL_Clip_Integration.md`
+  - `QC Weekly ETL Script` → `etl/qc_weekly_etl.py`
+  - `IO Utils (Telemetry/Manifest I/O helpers)` → `tools/io_utils.py`
+  - `Manifest Diff Tool` → `tools/manifest_diff.py`
+  - `CI IFNS Guard Workflow` → `.github/workflows/ci_ifns_guard.yml`
+  - `CI Manifest Guard (Python)` → `tools/ci_manifest_guard.py`
+
+- **Runtime Templates & Calendars**
+  - `Runtime – Calendar Gaps 2025` → `sync/ifns/calendar_gaps_2025.json`
+  - `Runtime Templates (YAML)` → summary of all files under `runtime_templates/**`
+
+**Status:**
+- ✅ Script completed without errors.
+- ✅ All listed pages created in Notion V2 with stubs and correct repo paths.
+- ℹ️ No Notion content should be edited manually; Git remains the source of truth.
+## 2025-11-18 – Seed V2 Manifests, Telemetry & Runtime stubs
+
+- **Context:** After unzipping `IFNS_Indicators_All_v0_10_to_v0_18.zip` into the repo root and creating
+  `IFNS – UI Master (V2)` in Notion, we needed to wire all V2 bundle assets (CSV/JSON/MD/PY/YAML) into
+  the new V2 sections without editing Notion manually.
+- **Script:** `scripts/ifns_v2_sync_manifests_qc_runtime.py`
+- **Env:** `NOTION_TOKEN` and `NOTION_ROOT_PAGE_ID` loaded via `.\local_env\notion_env.ps1` in
+  `E:\GitHub\autopilot-notion-ops` (PowerShell, venv active).
+
+**Actions performed:**
+- Under **IFNS – UI Master (V2) → Manifests & Policy** created stub pages for:
+  - `Indicator Feature Schema v1 (with family)` → `sync/ifns/indicator_feature_schema_v1_with_family.csv`
+  - `Indicator Feature Schema H1 v1 (with family)` → `sync/ifns/indicator_feature_schema_h1_v1_with_family.csv`
+  - `Feature Policy Matrix` → `sync/ifns/feature_policy_matrix.csv`
+  - `Feature Family Map` → `sync/ifns/feature_family_map.csv`
+  - `Indicators – Universe Catalog (Phase 2 Draft)` → `sync/ifns/indicators_universe_catalog_phase2.csv`
+  - `Indicators – L1 Catalog (Phase 3)` → `sync/ifns/indicators_catalog_L1_phase3.csv`
+  - `Indicators – L2/L3 Framework Catalog (Phase 4)` → `sync/ifns/indicators_catalog_L2L3_phase4.csv`
+- Under **Telemetry & QC** created stubs for:
+  - `sync/ifns/qc_weekly_schema_v1.json`
+  - `sync/ifns/qc_weekly_example_v1.ndjson`
+  - `docs/ifns/indicators/QC_Weekly_Telemetry_V1.md`
+  - `docs/ifns/indicators/QC_Weekly_ETL_Skeleton.md`
+  - `docs/ifns/indicators/QC_Weekly_ETL_Clip_Integration.md`
+  - `etl/qc_weekly_etl.py`
+  - `tools/io_utils.py`
+  - `tools/manifest_diff.py`
+  - `.github/workflows/ci_ifns_guard.yml`
+  - `tools/ci_manifest_guard.py`
+- Under **Runtime Templates & Calendars** created stubs for:
+  - `sync/ifns/calendar_gaps_2025.json`
+  - All files under `runtime_templates/**` (listed on a “Runtime Templates (YAML)” page).
+
+**Outcome:**
+- Script completed successfully with no errors.
+- All key V2 bundle assets now have explicit Notion stubs linking back to their Git paths.
+- V2 remains file-driven: pages clearly state that Git files are the source of truth and Notion is read-only.
+
+**Future notes:**
+- If any of these filenames or paths change in Git, re-run
+  `python scripts/ifns_v2_sync_manifests_qc_runtime.py` to refresh the stubs.
+- Do not manually rename these V2 stub pages without adjusting the script, or the mapping
+  between Git and Notion could drift.
+
+### 2025-11-18T13:02:03.307775Z  DB build-out scripts executed
+- Scripts: create_dbs, sync_generic, sync_qc_weekly, wire_pages
+- Notes: file-first, idempotent upserts by primary key.
+
+### 2025-11-18T13:05:06.753632Z  DB build-out scripts executed
+- Scripts: create_dbs, sync_generic, sync_qc_weekly, wire_pages
+- Notes: file-first, idempotent upserts by primary key.
+
+### 2025-11-18T13:09:23.512723Z  DB build-out scripts executed
+- Scripts: create_dbs, sync_generic, sync_qc_weekly, wire_pages
+- Notes: file-first, idempotent upserts by primary key.
+
+### 2025-11-18T13:17:09.617062Z  DB build-out scripts executed
+- Scripts: create_dbs, sync_generic, sync_qc_weekly, wire_pages
+- Notes: file-first, idempotent upserts by primary key.
+
+### 2025-11-18T13:41:30.288540Z  DB build-out scripts executed
+- Scripts: create_dbs, sync_generic, sync_qc_weekly, wire_pages
+- Notes: file-first, idempotent upserts by primary key.

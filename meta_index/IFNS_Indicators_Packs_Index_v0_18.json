@@ -1,0 +1,97 @@
+{
+  "generated_at": "2025-11-18",
+  "total_files": 10,
+  "instructions": "Unzip packs in ascending merge_order into the same project root. If prompted on collisions, prefer the NEWER pack (higher version).",
+  "items": [
+    {
+      "merge_order": 1,
+      "version": "v0.10",
+      "filename": "IFNS_Indicators_Pack_v0_10.zip",
+      "path": "/mnt/data/IFNS_Indicators_Pack_v0_10.zip",
+      "bytes": 11242,
+      "sha256": "f3adcb201636259567aba9ae83392f1b260c174ea3279a9e42cdd14e27ec3ff4",
+      "notes": "Soft clipping + holiday YAMLs"
+    },
+    {
+      "merge_order": 2,
+      "version": "v0.11",
+      "filename": "IFNS_Indicators_Pack_v0_11.zip",
+      "path": "/mnt/data/IFNS_Indicators_Pack_v0_11.zip",
+      "bytes": 4067,
+      "sha256": "85baf0861b147510a604fd562541ea034801eacc6dfdf11e7bbbbc0767322f45",
+      "notes": "Policy matrix + unit-test fixtures"
+    },
+    {
+      "merge_order": 3,
+      "version": "v0.12",
+      "filename": "IFNS_Indicators_Pack_v0_12.zip",
+      "path": "/mnt/data/IFNS_Indicators_Pack_v0_12.zip",
+      "bytes": 3373,
+      "sha256": "207182423eac81937a81d75cea44dadbb5b15169d1db922f9dfee9b43ab7d667",
+      "notes": "Feature\u2192family map + pytest starter"
+    },
+    {
+      "merge_order": 4,
+      "version": "v0.13",
+      "filename": "IFNS_Indicators_Pack_v0_13.zip",
+      "path": "/mnt/data/IFNS_Indicators_Pack_v0_13.zip",
+      "bytes": 6000,
+      "sha256": "4cd78db4603a8af42c6c1d75528c2f67768d2d453697be21c4cd9e3c9f941419",
+      "notes": "Schemas with family + Phase readiness checklists"
+    },
+    {
+      "merge_order": 5,
+      "version": "v0.14",
+      "filename": "IFNS_Indicators_Pack_v0_14.zip",
+      "path": "/mnt/data/IFNS_Indicators_Pack_v0_14.zip",
+      "bytes": 6433,
+      "sha256": "391f18aaf661806ba595813758efa0f1b1c6c0e319cffd4a112bd52c5f3eb165",
+      "notes": "Manifests carry family + CSV linter + lint reports"
+    },
+    {
+      "merge_order": 6,
+      "version": "v0.15",
+      "filename": "IFNS_Indicators_Pack_v0_15.zip",
+      "path": "/mnt/data/IFNS_Indicators_Pack_v0_15.zip",
+      "bytes": 3866,
+      "sha256": "9d58b4e9b439f65034ea0a46f559e0b186cfe4e915a47b993302197725711827",
+      "notes": "Weekly QC telemetry schema + manifest diff tool"
+    },
+    {
+      "merge_order": 7,
+      "version": "v0.16",
+      "filename": "IFNS_Indicators_Pack_v0_16.zip",
+      "path": "/mnt/data/IFNS_Indicators_Pack_v0_16.zip",
+      "bytes": 5618,
+      "sha256": "3bdac9aa24b29763d6514ce76e6d3d6abd9bbb165a24eafec0223d532f76807c",
+      "notes": "QC Weekly ETL skeleton + CI guard + GH workflow"
+    },
+    {
+      "merge_order": 8,
+      "version": "v0.17",
+      "filename": "IFNS_Indicators_Pack_v0_17.zip",
+      "path": "/mnt/data/IFNS_Indicators_Pack_v0_17.zip",
+      "bytes": 4809,
+      "sha256": "b334bb87a86df50276dc777a39b394568afbdbad5ed429b1fffaeb7e11dff02e",
+      "notes": "ETL reads clip-event logs + clip budgets"
+    },
+    {
+      "merge_order": 9,
+      "version": "v0.18",
+      "filename": "IFNS_Indicators_Pack_v0_18.zip",
+      "path": "/mnt/data/IFNS_Indicators_Pack_v0_18.zip",
+      "bytes": 6030,
+      "sha256": "80409d2524368782b662d81931b3029c86d3e74b4c34e4bb0e4004bafa639faa",
+      "notes": "IO utilities + synthetic inputs + demos"
+    },
+    {
+      "merge_order": 10,
+      "version": "v0.18",
+      "filename": "IFNS_Indicators_Quickstart_v0_18.md",
+      "path": "/mnt/data/IFNS_Indicators_Quickstart_v0_18.md",
+      "bytes": 6812,
+      "sha256": "b3fb2e0f1a7ea1d5fb11217585d081ac835b0c69ee7c376a41d8b102001b3c6c",
+      "notes": "Quickstart README"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+﻿notion-client
+pandas
+python-dateutil
+pyyaml
+ndjson

@@ -1,0 +1,143 @@
+{
+  "view": "H1_demo_v1",
+  "created_at": "2025-11-18",
+  "horizon": "H1",
+  "frequency": "1h",
+  "alignment": "close_time",
+  "whitelist_path": "sync/ifns/examples/feature_view_H1_demo.csv",
+  "schema_path": "sync/ifns/examples/indicator_feature_schema_h1_demo.csv",
+  "whitelist_sha256": "NA",
+  "schema_sha256": "NA",
+  "columns": [
+    "FEAT.L1.RET_1H.H1",
+    "FEAT.L1.BOLL_Z20x2.H1",
+    "FEAT.L1.RSI14.H1",
+    "FEAT.CTX.PRICE_LOCATION_BIN"
+  ],
+  "columns_sha256": "11032e44bc1ab6afc2ce9c172a23a52daa1a1ae29986e9a0dec1f33685acaaac",
+  "policy_defaults": {
+    "numeric": {
+      "min_coverage_pct": 0.98,
+      "max_na_pct": 0.02,
+      "drift_ks_p_min": 0.01,
+      "z_soft_clip": [
+        -6,
+        6
+      ]
+    },
+    "categorical": {
+      "min_cardinality": 3,
+      "max_single_class_pct": 0.9
+    },
+    "clip_policy": {
+      "method": "cap_and_log",
+      "max_clipped_pct_per_day": 0.005,
+      "log_event": "feat_softclip"
+    }
+  },
+  "per_feature_qc": {
+    "FEAT.L1.RET_1H.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "family": "MOMENTUM",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ]
+      },
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ],
+        "max_clipped_pct_per_day": 0.005
+      }
+    },
+    "FEAT.L1.BOLL_Z20x2.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "family": "TREND",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          -7,
+          7
+        ]
+      },
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          -7,
+          7
+        ]
+      }
+    },
+    "FEAT.L1.RSI14.H1": {
+      "level": "L1",
+      "dtype": "float32",
+      "family": "MEAN_REVERSION",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.975,
+        "max_na_pct": 0.025
+      },
+      "values": {
+        "type": "numeric",
+        "expected_range": [
+          0,
+          1
+        ]
+      },
+      "value_exceptions": {
+        "raw_value_range": [
+          0,
+          100
+        ],
+        "post_scale_expected_range": [
+          0,
+          1
+        ]
+      },
+      "clip_policy": {
+        "method": "cap_and_log",
+        "soft_clip": [
+          0,
+          1
+        ],
+        "tolerance": 0.01
+      }
+    },
+    "FEAT.CTX.PRICE_LOCATION_BIN": {
+      "level": "CTX",
+      "dtype": "int32",
+      "family": "CONTEXT",
+      "horizon": "H1",
+      "frequency": "1h",
+      "thresholds": {
+        "min_coverage_pct": 0.95,
+        "max_na_pct": 0.08
+      },
+      "values": {
+        "type": "categorical",
+        "min_cardinality": 3,
+        "max_single_class_pct": 0.9
+      }
+    }
+  }
+}

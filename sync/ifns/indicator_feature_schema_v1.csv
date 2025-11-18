@@ -1,0 +1,46 @@
+indicator_id,feature_id,feature_name,feature_channel,feature_dtype,source_output,state_space,default_timeframe,default_agg,missing_policy,enabled_default,notes_phase5
+sma_20,sma_20_value,Simple Moving Average (20) value,value,float32,sma_20,[unbounded_real],1h,last,ffill,True,Core trend level; used as base feature in most models.
+ema_50,ema_50_value,Exponential Moving Average (50) value,value,float32,ema_50,[unbounded_real],1h,last,ffill,True,Medium-term trend benchmark.
+price_location_20,price_location_20_value,Price location vs 20-bar range (0–1),value,float32,price_location_20,"[0,1]",1h,last,ffill,True,Normalized range location for top/bottom context.
+rsi_14,rsi_14_value,RSI(14) value,value,float32,rsi,"[0,100]",1h,last,ffill,True,Core bounded momentum oscillator.
+rsi_14,rsi_14_state,RSI(14) state (oversold/neutral/overbought),state,string,rsi_state,"{""values"":[""oversold"",""neutral"",""overbought""]}",1h,last,ffill,True,Discretized RSI states; thresholds configurable in admin.
+rsi_14,rsi_14_cross_oversold_event,RSI(14) crossing into oversold,event,bool,rsi_cross,"{""values"":[0,1]}",1h,any,zero,True,Event when RSI crosses below oversold threshold; used for entry/exit logic.
+rsi_14,rsi_14_cross_overbought_event,RSI(14) crossing into overbought,event,bool,rsi_cross,"{""values"":[0,1]}",1h,any,zero,True,Event when RSI crosses above overbought threshold.
+roc_10,roc_10_value,Rate of Change (10) value,value,float32,roc_10,[unbounded_real],1h,last,ffill,True,Short-term normalized momentum magnitude.
+atr_14,atr_14_value,ATR(14) value,value,float32,atr_14,[>=0],1h,last,ffill,True,Core volatility measure for sizing/stops.
+realized_vol_20,realized_vol_20_value,Realized volatility (20) value,value,float32,realized_vol_20,[>=0],1d,last,ffill,True,"Realized volatility over 20-bar window, typically daily."
+volume,volume_value,Raw volume per bar,value,float32,volume,[>=0],1h,last,zero,True,Baseline participation metric; zero if missing or no trading.
+vol_sma_20,vol_sma_20_value,Volume SMA(20) value,value,float32,vol_sma_20,[>=0],1h,last,ffill,True,Smoothed volume context.
+obv,obv_value,On-Balance Volume value,value,float32,obv,[unbounded_real],1h,last,ffill,True,Cumulative signed volume; useful with trend context.
+vwap_intraday,vwap_intraday_value,VWAP (intraday) value,value,float32,vwap_intraday,[unbounded_real],5m,last,ffill,True,Intraday execution benchmark.
+swing_high_5,swing_high_5_event,Swing High (5) event flag,event,bool,swing_high_5,"{""values"":[0,1]}",1h,any,zero,True,Marks local swing highs; used in structure and swing-based logic.
+swing_low_5,swing_low_5_event,Swing Low (5) event flag,event,bool,swing_low_5,"{""values"":[0,1]}",1h,any,zero,True,Marks local swing lows.
+range_high_20,range_high_20_value,20-bar range high value,value,float32,range_high_20,[unbounded_real],1h,last,ffill,True,Rolling resistance reference.
+range_low_20,range_low_20_value,20-bar range low value,value,float32,range_low_20,[unbounded_real],1h,last,ffill,True,Rolling support reference.
+sr_zone_v1,sr_zone_v1_distance_to_nearest_support_value,Distance to nearest strong support zone,value,float32,sr_zone_distance_support,[>=0 or sentinel],1h,last,sentinel,True,"Distance in price units or %; sentinel (e.g., large number) if no zone exists."
+sr_zone_v1,sr_zone_v1_distance_to_nearest_resistance_value,Distance to nearest strong resistance zone,value,float32,sr_zone_distance_resistance,[>=0 or sentinel],1h,last,sentinel,True,Distance to nearest resistance zone.
+candle_body_pct,candle_body_pct_value,Candle body % of range,value,float32,candle_body_pct,"[0,1]",all,last,ffill,True,Basic candle feature for micro-structure.
+upper_wick_pct,upper_wick_pct_value,Upper wick % of range,value,float32,upper_wick_pct,"[0,1]",all,last,ffill,True,Basic candle feature; shows rejection from above.
+lower_wick_pct,lower_wick_pct_value,Lower wick % of range,value,float32,lower_wick_pct,"[0,1]",all,last,ffill,True,Basic candle feature; shows rejection from below.
+close_pos_pct,close_pos_pct_value,Close position in range,value,float32,close_pos_pct,"[0,1]",all,last,ffill,True,"Normalized close location, used in many candle rules."
+candle_pattern_basic_v1,candle_pattern_basic_v1_is_doji_event,Doji candle event,event,bool,is_doji,"{""values"":[0,1]}",all,any,zero,True,Rule-based doji detection event.
+candle_pattern_basic_v1,candle_pattern_basic_v1_is_pinbar_bull_event,Bullish pinbar candle event,event,bool,is_pinbar_bull,"{""values"":[0,1]}",all,any,zero,True,Rule-based bullish pinbar detection.
+multi_candle_pattern_v1,multi_candle_pattern_v1_is_engulfing_bull_event,Bullish engulfing pattern event,event,bool,is_engulfing_bull,"{""values"":[0,1]}",all,any,zero,True,Two-candle bullish engulfing event.
+trend_mtf_v1,trend_state_mtf,Multi-timeframe trend state,state,string,trend_state_mtf,"{""values"":[""strong_up"",""up"",""sideways"",""down"",""strong_down""]}",1h,last,ffill,True,Canonical trend state; major context feature.
+vol_regime_state_v1,vol_regime_state,Volatility regime state,state,string,vol_regime_state,"{""values"":[""calm"",""normal"",""stressed""]}",1d,last,ffill,True,Discrete volatility regimes.
+liq_stress_v1,liq_stress_state,Liquidity stress state,state,string,liq_stress_state,"{""values"":[""normal"",""tight"",""stressed""]}",1h,last,ffill,True,Composite liquidity regime.
+regime_cluster_id_v1,regime_cluster_id_state,Regime cluster ID,state,int8,regime_cluster_id,"{""values"":[""0..K-1""]}",1d,last,ffill,True,Unsupervised market regime cluster ID.
+breakout_flag_v1,breakout_flag_up_event,Breakout up event,event,bool,breakout_flag_up,"{""values"":[0,1]}",15m,any,zero,True,Upward breakout event.
+breakout_flag_v1,breakout_flag_down_event,Breakout down event,event,bool,breakout_flag_down,"{""values"":[0,1]}",15m,any,zero,True,Downward breakout event.
+earnings_flag,earnings_flag_event,Earnings event flag,event,bool,earnings_flag,"{""values"":[0,1]}",1d,any,zero,True,True around earnings dates.
+event_window_state_v1,event_window_state,Event window state,state,string,event_window_state,"{""values"":[""none"",""pre_event"",""event_day"",""post_event""]}",1d,last,ffill,True,Event-relative state.
+pe_ttm,pe_ttm_value,P/E (TTM) value,value,float32,pe_ttm,[>=0],1d,last,ffill,True,Core valuation metric.
+fund_quality_score_v1,fund_quality_score_value,Fundamental quality score value,value,float32,fund_quality_score,[approx 0..1 or z-score],1d,last,ffill,False,Composite quality score; enabled where fundamentals are available and clean.
+valuation_percentile_v1,valuation_percentile_value,Valuation percentile vs peers,value,float32,valuation_percentile,"[0,1]",1d,last,ffill,True,"Relative valuation; 0=cheapest,1=most expensive."
+dd_trailing_20,dd_trailing_20_value,Trailing drawdown (20) value,value,float32,dd_trailing_20,"[-1,0]",1d,last,ffill,True,Short-horizon drawdown; risk context.
+beta_market_60,beta_market_60_value,Market beta (60) value,value,float32,beta_market_60,[unbounded_real],1d,last,ffill,True,Rolling systematic risk vs benchmark.
+stress_state_v1,stress_state,System stress state,state,string,stress_state,"{""values"":[""normal"",""elevated"",""critical""]}",1d,last,ffill,True,Portfolio/system-level stress regimes.
+risk_budget_util_v1,risk_budget_utilization_value,Risk budget utilization value,value,float32,risk_budget_utilization,"[0,1.5]",1d,last,ffill,True,How much of configured risk budgets are used; >1 implies breach.
+risk_budget_util_v1,risk_budget_limit_hit_event,Risk budget limit breach event,event,bool,risk_budget_breach,"{""values"":[0,1]}",1d,any,zero,True,Event fired when utilization exceeds configured threshold.
+candle_embedding_v1,candle_embedding_16d_vector,Candle embedding (16-D),vector,json,candle_embedding,"{""shape"":[16]}",5m,last,ffill,False,Dense vector feature; stored as JSON or external embedding store; optional in v1.
+candle_cluster_id_v1,candle_cluster_id_state,Candle cluster ID state,state,int8,candle_cluster_id,"{""values"":[""0..K-1""]}",5m,last,ffill,False,Discrete micro-pattern ID from candle embeddings; used for advanced context slicing.

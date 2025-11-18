@@ -1,0 +1,5 @@
+feature_id,level,family,dtype,type,scaling,horizon,frequency,tags
+FEAT.L1.BOLL_Z20x2.D1,L1,TREND,float32,numeric,z,D1,1d,trend
+FEAT.L1.RSI14.D1,L1,MEAN_REVERSION,float32,numeric,minmax,D1,1d,mean_reversion
+FEAT.L1.ATR14_PCT.D1,L1,VOLATILITY,float32,numeric,z,D1,1d,volatility
+FEAT.CTX.PRICE_LOCATION_BIN,CTX,CONTEXT,int32,categorical,,D1,1d,context

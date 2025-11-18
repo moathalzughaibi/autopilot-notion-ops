@@ -1,0 +1,44 @@
+[
+  {
+    "severity":"WARN",
+    "file":"schema_D1_with_family",
+    "feature_id":"FEAT.L2.RSI14_REGIME_V1.D1",
+    "code":"SCALING_EXPECT_MINMAX",
+    "message":"FEAT.L2.RSI14_REGIME_V1.D1 usually minmax-scaled; found z"
+  },
+  {
+    "severity":"WARN",
+    "file":"schema_H1_with_family",
+    "feature_id":"FEAT.L2.RSI14_REGIME_V1.H1",
+    "code":"SCALING_EXPECT_MINMAX",
+    "message":"FEAT.L2.RSI14_REGIME_V1.H1 usually minmax-scaled; found z"
+  },
+  {
+    "severity":"WARN",
+    "file":"MULTI",
+    "feature_id":"FEAT.CTX.CANDLE_CLUSTER_ID",
+    "code":"DUPLICATE_ID",
+    "message":"feature_id appears 2 times across schemas"
+  },
+  {
+    "severity":"WARN",
+    "file":"MULTI",
+    "feature_id":"FEAT.CTX.PRICE_LOCATION_BIN",
+    "code":"DUPLICATE_ID",
+    "message":"feature_id appears 2 times across schemas"
+  },
+  {
+    "severity":"WARN",
+    "file":"MULTI",
+    "feature_id":"FEAT.CTX.STRUCTURE_STATE",
+    "code":"DUPLICATE_ID",
+    "message":"feature_id appears 2 times across schemas"
+  },
+  {
+    "severity":"WARN",
+    "file":"MULTI",
+    "feature_id":"FEAT.CTX.TREND_STATE",
+    "code":"DUPLICATE_ID",
+    "message":"feature_id appears 2 times across schemas"
+  }
+]

@@ -1,0 +1,87 @@
+indicator_id,name,family_role_primary,family_role_secondary,level,output_type_primary,digitization_level,universe_tier,description_short,notes_phase2
+sma_20,Simple Moving Average (20),Trend & Price Location,,L1,scalar,formula,0,20-bar simple average of closing price,Baseline MA for trend context.
+sma_50,Simple Moving Average (50),Trend & Price Location,,L1,scalar,formula,0,50-bar simple average of closing price,Longer trend context.
+ema_12,Exponential Moving Average (12),Trend & Price Location,,L1,scalar,formula,0,12-bar EMA of closing price,Short-term trend reference.
+ema_26,Exponential Moving Average (26),Trend & Price Location,,L1,scalar,formula,0,26-bar EMA of closing price,Medium-term trend reference.
+ema_50,Exponential Moving Average (50),Trend & Price Location,,L1,scalar,formula,0,50-bar EMA of closing price,Core trend anchor.
+macd_12_26_9,"MACD (12,26,9)",Trend & Price Location,Momentum & Strength,L1,scalar,formula,0,"MACD line, signal, and histogram based on 12/26 EMAs and 9-signal.",Standard trend/momentum blend.
+price_location_20,Price Location vs 20-bar Range,Trend & Price Location,,L1,oscillator,formula,0,"Normalized position of price in 20-bar high/low range [0,1].",Used for top/bottom range context.
+trend_regression_50,Trend Regression Slope (50),Trend & Price Location,,L2,scalar,formula,1,Slope of linear regression over last 50 bars.,Alternative trend strength measure.
+trend_mtf_v1,Multi-Timeframe Trend Framework,Trend & Price Location,Market Structure & Geometry,L3,category,rule,1,Multi-timeframe trend and price-location states.,Consumes several L1/L2 indicators; detailed in Phase 4.
+hurst_100,Hurst Exponent (100),Trend & Price Location,Volatility & Range,L2,scalar,formula,2,Hurst exponent over 100-bar window.,Experimental persistence/mean-reversion metric.
+trend_persistence_v1,Trend Persistence Score v1,Trend & Price Location,,L3,scalar,ml_pattern,2,ML-based score of trend persistence over multiple horizons.,Requires dedicated training/validation.
+rsi_14,Relative Strength Index (14),Momentum & Strength,Trend & Price Location,L1,oscillator,formula,0,"Bounded momentum oscillator in [0,100].",Used for overbought/oversold states.
+roc_10,Rate of Change (10),Momentum & Strength,,L1,scalar,formula,0,10-bar rate of change in price.,Basic momentum magnitude.
+mom_10,Momentum (10),Momentum & Strength,,L1,scalar,formula,0,Price_t - Price_{t-10}.,Simple difference-based momentum.
+stoch_k_14_3,"Stochastics %K (14,3)",Momentum & Strength,,L1,oscillator,formula,0,%K line of stochastic oscillator.,Short-term momentum/overbought-oversold.
+stoch_d_14_3_3,"Stochastics %D (14,3,3)",Momentum & Strength,,L1,oscillator,formula,0,%D line (signal) of stochastic oscillator.,Smoothed stochastic.
+cci_20,Commodity Channel Index (20),Momentum & Strength,Volatility & Range,L1,scalar,formula,1,CCI over 20 bars.,Alternative momentum/overextension measure.
+williams_r_14,Williams %R (14),Momentum & Strength,,L1,oscillator,formula,1,Williams %R over 14 bars.,Overbought/oversold style oscillator.
+rsi_slow_14_v1,Smoothed RSI (14) v1,Momentum & Strength,,L2,oscillator,formula,1,EMA-smoothed RSI(14).,Reduces noise for swing trading.
+momentum_z_20,Momentum Z-Score (20),Momentum & Strength,,L2,scalar,formula,1,Z-scored momentum over 20 bars.,Normalized momentum for cross-asset comparison.
+momentum_consensus_v1,Momentum Consensus Score v1,Momentum & Strength,Trend & Price Location,L3,scalar,ml_pattern,2,Composite momentum score learned from multiple indicators.,Requires supervised learning & governance.
+true_range,True Range,Volatility & Range,,L1,scalar,formula,0,True range of current bar.,Building block for ATR.
+atr_14,Average True Range (14),Volatility & Range,,L1,scalar,formula,0,Average true range over 14 bars.,Core volatility measure for sizing.
+realized_vol_20,Realized Volatility (20),Volatility & Range,,L1,scalar,formula,0,Standard deviation of log returns over 20 bars.,Short-horizon realized volatility.
+bollinger_20_2,"Bollinger Bands (20, 2σ)",Volatility & Range,Trend & Price Location,L2,scalar,formula,1,Upper/middle/lower bands using 20-bar MA and 2σ bands.,Combines trend and volatility.
+bollinger_pb_20_2,"Bollinger %B (20, 2σ)",Volatility & Range,,L2,oscillator,formula,1,"Position of price within Bollinger bands [0,1].",Normalized range position.
+range_expansion_20,Range Expansion Ratio (20),Volatility & Range,,L2,scalar,formula,1,Current true range / average true range over 20 bars.,Detects volatility expansions.
+vol_regime_state_v1,Volatility Regime State v1,Volatility & Range,Event & Regime,L3,category,rule,2,Discrete volatility regimes (calm/normal/stressed).,Rule-based mapping of volatility levels.
+vol_of_vol_20,Vol of Vol (20),Volatility & Range,,L2,scalar,formula,2,Volatility of realized volatility over 20-bar window.,Second-order volatility metric.
+volume,Volume,Volume / Flow / Liquidity,,L1,scalar,formula,0,Raw traded volume per bar.,Baseline participation metric.
+vol_sma_20,Volume SMA (20),Volume / Flow / Liquidity,,L1,scalar,formula,0,20-bar simple average of volume.,Baseline volume trend.
+obv,On-Balance Volume,Volume / Flow / Liquidity,Momentum & Strength,L1,scalar,formula,0,Cumulative volume signed by price direction.,Simple volume-flow proxy.
+vwap_intraday,VWAP (Intraday),Volume / Flow / Liquidity,Trend & Price Location,L1,scalar,formula,0,Volume-weighted average price during the session.,Core benchmark for intraday execution.
+vwap_dev,VWAP Deviation,Volume / Flow / Liquidity,Trend & Price Location,L2,scalar,formula,1,Price distance from VWAP (absolute and normalized).,Used for mean-reversion vs trend context.
+ofi_20,Order Flow Imbalance (20),Volume / Flow / Liquidity,,L2,scalar,formula,1,Net signed volume over last 20 bars (if tick/order data).,Order flow proxy.
+depth_imbalance_1,Depth Imbalance (Level 1),Volume / Flow / Liquidity,,L2,scalar,formula,1,Bid vs ask depth imbalance at top-of-book.,Liquidity balance indicator.
+spread_bp,Bid-Ask Spread (bp),Volume / Flow / Liquidity,Risk & Exposure,L1,scalar,formula,1,Bid-ask spread in basis points.,Execution cost proxy.
+liq_stress_v1,Liquidity Stress Score v1,Volume / Flow / Liquidity,Risk & Exposure,L3,scalar,ml_pattern,2,"Composite liquidity stress indicator using spread, depth, and impact.","Advanced, ML-based."
+vpin_v1,VPIN v1,Volume / Flow / Liquidity,Risk & Exposure,L3,scalar,formula,2,Volume-synchronized probability of informed trading (approx.).,"Complex metric, requires careful implementation."
+swing_high_5,Swing High (5),Market Structure & Geometry,,L1,flag,rule,0,Flag true when bar is a 5-bar swing high.,Basic structural pivot.
+swing_low_5,Swing Low (5),Market Structure & Geometry,,L1,flag,rule,0,Flag true when bar is a 5-bar swing low.,Basic structural pivot.
+hh_hl_state_v1,HH/HL Structure State v1,Market Structure & Geometry,Trend & Price Location,L2,category,rule,1,State machine: HH/HL vs LH/LL structure.,Simple structure context.
+range_high_20,Range High (20),Market Structure & Geometry,,L1,scalar,formula,0,Highest high in last 20 bars.,Rolling resistance reference.
+range_low_20,Range Low (20),Market Structure & Geometry,,L1,scalar,formula,0,Lowest low in last 20 bars.,Rolling support reference.
+structure_mtf_v1,Structure MTF Framework v1,Market Structure & Geometry,Trend & Price Location,L3,category,rule,1,Multi-timeframe structure engine with swing tiers.,Framework-level context for structure.
+sr_zone_v1,Support/Resistance Zone v1,Market Structure & Geometry,,L3,episode,rule,1,Detected support/resistance zones with strength scores.,Zones as episodes with metadata.
+breakout_flag_v1,Breakout Flag v1,Market Structure & Geometry,Trend & Price Location,L2,flag,rule,1,Flag when price breaks significant range/level.,Event focused on structural breaks.
+wyckoff_phase_v1,Wyckoff Phase Approximation v1,Market Structure & Geometry,Event & Regime,L3,category,ml_pattern,2,Approximate Wyckoff accumulation/distribution phases.,Requires ML and historical labelling.
+market_profile_nodes_v1,Market Profile Nodes v1,Market Structure & Geometry,Volume / Flow / Liquidity,L3,vector,formula,2,High-volume nodes and value areas over chosen windows.,Advanced structure/volume integration.
+candle_body_pct,Candle Body % of Range,Candle Grammar & Micro-Patterns,,L1,scalar,formula,0,Body size as fraction of full candle range.,Basic candle feature.
+upper_wick_pct,Upper Wick % of Range,Candle Grammar & Micro-Patterns,,L1,scalar,formula,0,Upper wick size as fraction of full range.,Basic candle feature.
+lower_wick_pct,Lower Wick % of Range,Candle Grammar & Micro-Patterns,,L1,scalar,formula,0,Lower wick size as fraction of full range.,Basic candle feature.
+close_pos_pct,Close Position in Range,Candle Grammar & Micro-Patterns,,L1,oscillator,formula,0,"Close point in candle range normalized to [0,1].",Used to detect strong/weak closes.
+candle_pattern_basic_v1,Basic Candle Pattern Flags v1,Candle Grammar & Micro-Patterns,Market Structure & Geometry,L2,flag,rule,1,"Flags for basic patterns (engulfing, pinbar, doji, etc.).",Rule-based pattern detection.
+gap_flag_v1,Gap Flag v1,Candle Grammar & Micro-Patterns,Event & Regime,L2,flag,rule,1,Detects gap up/down events.,Event-style candle detection.
+multi_candle_pattern_v1,Multi-Candle Pattern v1,Candle Grammar & Micro-Patterns,Market Structure & Geometry,L2,flag,rule,1,Two- and three-candle pattern flags (e.g. morning star).,Extended classic patterns.
+candle_embedding_v1,Candle Embedding v1,Candle Grammar & Micro-Patterns,,L3,vector,ml_pattern,2,Learned embedding vector of last N candles.,Requires sequence model and training.
+candle_cluster_id_v1,Candle Cluster ID v1,Candle Grammar & Micro-Patterns,,L3,category,ml_pattern,2,Cluster ID from candle embeddings.,Discrete micro-pattern states.
+micro_flow_pattern_v1,Micro Flow Pattern v1,Candle Grammar & Micro-Patterns,Volume / Flow / Liquidity,L3,category,ml_pattern,2,ML-based local micro-pattern classifier.,"Advanced, depends on tick/flow data."
+pe_ttm,P/E (TTM),Valuation & Fundamentals,,L1,scalar,formula,0,Price/Earnings ratio (trailing 12 months).,Core valuation metric.
+pb,Price/Book,Valuation & Fundamentals,,L1,scalar,formula,0,Price/Book ratio.,Balance-sheet focused valuation.
+div_yield,Dividend Yield,Valuation & Fundamentals,,L1,scalar,formula,0,Dividend yield as annualized % of price.,Income-focused metric.
+ev_ebitda,EV/EBITDA,Valuation & Fundamentals,,L1,scalar,formula,1,Enterprise Value / EBITDA.,Common cross-firm valuation metric.
+eps_growth_yoy,EPS Growth YoY,Valuation & Fundamentals,,L1,scalar,formula,1,Earnings per share growth year-over-year.,Growth dimension of fundamentals.
+rev_growth_yoy,Revenue Growth YoY,Valuation & Fundamentals,,L1,scalar,formula,1,Revenue growth year-over-year.,Top-line growth metric.
+debt_to_equity,Debt-to-Equity,Valuation & Fundamentals,Risk & Exposure,L1,scalar,formula,1,Debt/Equity ratio.,Leverage and balance-sheet risk.
+fund_quality_score_v1,Fundamental Quality Score v1,Valuation & Fundamentals,Risk & Exposure,L3,scalar,ml_pattern,2,Composite quality factor from multiple fundamentals.,Requires modeling and backtesting.
+valuation_percentile_v1,Valuation Percentile v1,Valuation & Fundamentals,Event & Regime,L2,oscillator,formula,2,Percentile of valuation vs peers/universe.,Relative valuation context.
+earnings_flag,Earnings Event Flag,Event & Regime,,L1,flag,rule,0,True near earnings announcement dates.,Basic corporate event.
+dividend_flag,Dividend Event Flag,Event & Regime,,L1,flag,rule,0,True near dividend ex-date/payment.,Dividend event context.
+split_flag,Split Event Flag,Event & Regime,,L1,flag,rule,0,True around stock splits or reverse splits.,Structural price-change event.
+event_window_state_v1,Event Window State v1,Event & Regime,,L2,category,rule,1,"States like pre-event, event-day, post-event.",Event-centric regime.
+risk_on_off_state_v1,Risk-On/Off State v1,Event & Regime,Risk & Exposure,L3,category,rule,1,Simple risk-on/off classification from macro/market indicators.,High-level market sentiment regime.
+macro_release_flag_v1,Macro Release Flag v1,Event & Regime,,L1,flag,rule,1,Flags major macroeconomic releases.,Macro event awareness.
+regime_cluster_id_v1,Regime Cluster ID v1,Event & Regime,Volatility & Range,L3,category,ml_pattern,2,ML-based cluster of market regimes.,"Advanced, multi-indicator clustering."
+macro_regime_state_v1,Macro Regime State v1,Event & Regime,Valuation & Fundamentals,L3,category,ml_pattern,2,"Discrete macro regimes (e.g., high inflation).",Requires macro datasets and modeling.
+dd_intraday,Intraday Drawdown,Risk & Exposure,,L1,scalar,formula,0,Drawdown relative to intraday peak.,Core risk metric.
+dd_trailing_20,Trailing Drawdown (20),Risk & Exposure,,L1,scalar,formula,0,Drawdown over trailing 20 bars.,Short-horizon risk.
+beta_market_60,Market Beta (60),Risk & Exposure,,L1,scalar,formula,1,Rolling beta vs benchmark over 60 bars.,Systematic risk measure.
+gross_exposure,Gross Exposure,Risk & Exposure,,L1,scalar,formula,0,Sum of absolute position sizes.,Portfolio-level risk load.
+net_exposure,Net Exposure,Risk & Exposure,,L1,scalar,formula,0,Net long-minus-short exposure.,Directional risk indicator.
+var_1d_95,1-Day 95% VaR,Risk & Exposure,,L2,scalar,formula,1,Value-at-Risk estimate for 1-day horizon at 95% confidence.,Model-based risk metric.
+es_1d_95,1-Day 95% ES,Risk & Exposure,,L2,scalar,formula,1,Expected Shortfall for 1-day horizon at 95% confidence.,Tail-risk measure.
+concentration_idx_v1,Concentration Index v1,Risk & Exposure,,L2,scalar,formula,1,Herfindahl-type index of position concentration.,Diversification proxy.
+stress_state_v1,Stress State v1,Risk & Exposure,Event & Regime,L3,category,ml_pattern,2,"Stress indicator from correlations, vol, drawdown.","Advanced, ML-based stress mapping."
+risk_budget_util_v1,Risk Budget Utilization v1,Risk & Exposure,,L3,scalar,rule,2,Utilization of allotted risk budgets vs policy.,Control-level risk utilization.

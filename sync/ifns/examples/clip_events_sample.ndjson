@@ -1,0 +1,4 @@
+{"timestamp": "2025-11-28T12:15:00-05:00", "feature_id": "FEAT.L1.BOLL_Z20x2.H1", "asset": "MSFT", "view": "H1_v1_0", "horizon": "H1", "frequency": "1h", "value_before": 7.2, "value_after": 6.0, "reason": "soft_clip [-7,7]"}
+{"timestamp": "2025-11-28T12:30:00-05:00", "feature_id": "FEAT.L1.BOLL_Z20x2.H1", "asset": "MSFT", "view": "H1_v1_0", "horizon": "H1", "frequency": "1h", "value_before": -7.5, "value_after": -7.0, "reason": "soft_clip [-7,7]"}
+{"timestamp": "2025-11-26T10:00:00-05:00", "feature_id": "FEAT.L1.RET_1H.H1", "asset": "MSFT", "view": "H1_v1_0", "horizon": "H1", "frequency": "1h", "value_before": 0.12, "value_after": 0.1, "reason": "soft_clip [-7,7]"}
+{"timestamp": "2025-05-29T16:00:00-04:00", "feature_id": "FEAT.L1.BOLL_Z20x2.D1", "asset": "SPY", "view": "D1_v1_1", "horizon": "D1", "frequency": "1d", "value_before": 6.9, "value_after": 6.0, "reason": "soft_clip [-6,6]"}

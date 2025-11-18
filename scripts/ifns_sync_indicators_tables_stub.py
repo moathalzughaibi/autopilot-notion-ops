@@ -1,17 +1,18 @@
 ﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-IFNS - Sync Phase 4 Tables & Telemetry specs (GitHub -> Notion).
+IFNS - Sync Indicator CSV anchors into Tables & Telemetry (DB Hub).
 
-Structure in Notion:
+Notion structure:
 
 IFNS – UI Master
   -> Tables & Telemetry (DB Hub)
-       -> <one child page per file in docs/ifns/tables>
+       -> Indicators  Universe Catalog (Phase 2 Draft)
+       -> Indicators  L1 Catalog (Phase 3)
+       -> Indicators  L2/L3 Framework Catalog (Phase 4)
+       -> Indicator Feature Schema v1 (Phase 5)
 
-Each child page receives either:
-- The full markdown/text content (for .md/.txt), or
-- A short stub pointing to the binary file (for .xlsx, etc.).
+Each page contains a stub pointing to the CSV under sync/ifns.
 """
 
 import os
@@ -41,7 +42,7 @@ HEADERS = {
 
 IFNS_MASTER_TITLE = "IFNS \u2013 UI Master"
 TABLES_HUB_TITLE = "Tables & Telemetry (DB Hub)"
-TABLES_DIR = Path("docs/ifns/tables")
+SYNC_DIR = Path("sync/ifns")
 
 
 def get_children_blocks(block_id: str) -> List[dict]:
@@ -114,9 +115,9 @@ def ensure_child_page(parent_id: str, title: str) -> str:
     try:
         resp.raise_for_status()
     except Exception as e:
-        print(f"[ERROR] creating page '{title}' -> {e}", file=sys.stderr)
-        print(resp.text, file=sys.stderr)
-        return ""
+            print(f"[ERROR] creating page '{title}' -> {e}", file=sys.stderr)
+            print(resp.text, file=sys.stderr)
+            return ""
     data = resp.json()
     cid = data.get("id", "")
     print(f"  -> Created page id={cid}")
@@ -146,7 +147,7 @@ def chunk_text(text: str, max_len: int = 1500):
     chunks = []
     current = []
     current_len = 0
-    for line in text.splitlines(True):  # keep line breaks
+    for line in text.splitlines(True):
         if current_len + len(line) > max_len and current:
             chunks.append("".join(current))
             current = [line]
@@ -185,32 +186,41 @@ def write_page_markdown(page_id: str, md_text: str) -> None:
     print(f"    -> Content updated ({total_chars} chars in {len(chunks)} block(s))")
 
 
-def pretty_title_from_stem(stem: str) -> str:
-    return stem.replace("_", " ").strip()
+def find_csv(token: str) -> Optional[Path]:
+    token_lower = token.lower()
+    for p in SYNC_DIR.glob("*.csv"):
+        if token_lower in p.name.lower():
+            return p
+    return None
 
 
-def build_stub_for_binary(path: Path, title: str) -> str:
+def build_stub(title: str, path: Path, purpose: str) -> str:
     return f"""# {title}
 
-This page represents a binary table file in the Git repo.
+This page represents an indicator table used in the IFNS pipeline.
 
 - **File name:** `{path.name}`
-- **Path in repo:** `docs/ifns/tables/{path.name}`
+- **Path in repo:** `sync/ifns/{path.name}`
 
-Use this page to document:
-- The table purpose (what this dataset is for)
-- Column definitions (name, type, meaning, units)
-- Any constraints or relationships (primary keys, foreign keys)
-- How this table maps into Notion databases in Phase 4.
+**Purpose**
 
-The actual data (seeds) lives in the Excel file above.
+{purpose}
+
+**Notes for next agent**
+
+- Treat this CSV as the source-of-truth for this indicator layer.
+- When building Notion databases, use this file as the backing dataset.
+- Map each column in the CSV to a Notion property (type, description, constraints).
 """
 
 
 def main() -> None:
-    print("IFNS - Sync Phase 4 Tables & Telemetry (GitHub -> Notion)")
+    print("IFNS - Sync Indicator CSV anchors into Tables & Telemetry (DB Hub)")
     print(f"Root page id: {NOTION_ROOT_PAGE_ID}")
-    print(f"Looking for '{IFNS_MASTER_TITLE}' under root...")
+
+    if not SYNC_DIR.exists():
+        print(f"ERROR: sync dir not found at {SYNC_DIR}", file=sys.stderr)
+        sys.exit(1)
 
     master_id = find_child_page_recursive(NOTION_ROOT_PAGE_ID, IFNS_MASTER_TITLE, max_depth=4)
     if not master_id:
@@ -218,48 +228,48 @@ def main() -> None:
         sys.exit(1)
     print(f"Found IFNS  UI Master page id: {master_id}")
 
-    if not TABLES_DIR.exists():
-        print(f"ERROR: Tables dir not found at {TABLES_DIR}", file=sys.stderr)
+    hub_id = find_child_page_recursive(master_id, TABLES_HUB_TITLE, max_depth=3)
+    if not hub_id:
+        print(f"ERROR: Could not find hub '{TABLES_HUB_TITLE}' under IFNS  UI Master.", file=sys.stderr)
         sys.exit(1)
+    print(f"Found Tables & Telemetry hub id: {hub_id}")
 
-    # Ensure hub
-    hub_id = ensure_child_page(master_id, TABLES_HUB_TITLE)
+    configs = [
+        (
+            "Indicators  Universe Catalog (Phase 2 Draft)",
+            "universe_cata",
+            "Phase 2 universe draft: all candidate indicators before pruning and promotion into L1."
+        ),
+        (
+            "Indicators  L1 Catalog (Phase 3)",
+            "catalog_l1",
+            "Phase 3 L1 atomic indicator catalog: cleaned, deduped, and named metrics used directly by models."
+        ),
+        (
+            "Indicators  L2/L3 Framework Catalog (Phase 4)",
+            "catalog_l2l3",
+            "Phase 4 L2/L3 catalog: higher-level frameworks/regimes composed from L1 indicators."
+        ),
+        (
+            "Indicator Feature Schema v1 (Phase 5)",
+            "feature_schema",
+            "Phase 5 feature schema: final columns/features that the ML model sees (bins, scaling, types)."
+        ),
+    ]
 
-    # Discover ALL files under docs/ifns/tables (any extension)
-    files = [p for p in TABLES_DIR.iterdir() if p.is_file()]
-    print(f"Found {len(files)} file(s) in {TABLES_DIR}:")
-    for f in files:
-        print(f"  - {f.name}")
-
-    if not files:
-        print(f"WARNING: No files found under {TABLES_DIR}")
-        print("\nDone.")
-        return
-
-    # Sync each file as a child under the hub
-    for path in sorted(files, key=lambda x: x.name.lower()):
-        stem = path.stem
-        title = pretty_title_from_stem(stem)
-        print(f"\n=== Syncing file '{path}' -> page '{title}' ===")
+    for title, token, purpose in configs:
+        print(f"\n=== Syncing '{title}' (token '{token}') ===")
+        csv_path = find_csv(token)
+        if csv_path is None:
+            print(f"  !! No CSV found in {SYNC_DIR} matching token '{token}', skipping.", file=sys.stderr)
+            continue
+        print(f"  -> Using CSV '{csv_path.name}'")
         page_id = ensure_child_page(hub_id, title)
         if not page_id:
             continue
-
         clear_page_content(page_id)
-
-        ext = path.suffix.lower()
-        if ext in {".md", ".txt"}:
-            # Text-like file: read as UTF-8
-            try:
-                md_text = path.read_text(encoding="utf-8")
-            except UnicodeDecodeError as e:
-                print(f"  !! Unicode error reading {path.name} as UTF-8, falling back to stub. {e}")
-                md_text = build_stub_for_binary(path, title)
-        else:
-            # Binary file (e.g. .xlsx) -> stub content
-            md_text = build_stub_for_binary(path, title)
-
-        write_page_markdown(page_id, md_text)
+        stub = build_stub(title, csv_path, purpose)
+        write_page_markdown(page_id, stub)
 
     print("\nDone.")
 
