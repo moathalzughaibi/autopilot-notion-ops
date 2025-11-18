@@ -39,3 +39,7 @@
 | 26 | Stage 05  Risk, Execution & SxE Link    | TBD_STAGE_05_ID    | Core ML Build Stages |  | Risk controls, execution linkage, and System-to-Experience bridge. | Sections 01/02/03 from `Stage_05_Risk_Execution_and_SxE_Link.md`. |
 | 27 | Stage 06  Paper Trading                 | TBD_STAGE_06_ID    | Core ML Build Stages |  | Paper-trading harness and dry-run operations. | Sections 01/02/03 from `Stage_06_Paper_Trading.md`. |
 | 28 | Stage 07  Live Trading & Operations     | TBD_STAGE_07_ID    | Core ML Build Stages |  | Live trading rollout, monitoring, and operational procedures. | Sections 01/02/03 from `Stage_07_Live_Trading_and_Operations.md`. |
+| 29 | Tables & Telemetry (DB Hub) | TBD_TABLES_HUB_ID | IFNS – UI Master |  | Hub for all CSV-backed databases and telemetry specs (Phase 4). | Child pages synced from `docs/ifns/tables/*.md` via `ifns_sync_tables_phase4.py`. |
+| 30 | <Phase 4 Page 1 Title>      | TBD_P4_PAGE1_ID   | Tables & Telemetry (DB Hub) |  | Phase 4 spec page (see matching .md in `docs/ifns/tables`). | Auto-synced. |
+| 31 | <Phase 4 Page 2 Title>      | TBD_P4_PAGE2_ID   | Tables & Telemetry (DB Hub) |  | Phase 4 spec page (see matching .md in `docs/ifns/tables`). | Auto-synced. |
+| 32 | <Phase 4 Page 3 Title>      | TBD_P4_PAGE3_ID   | Tables & Telemetry (DB Hub) |  | Phase 4 spec page (see matching .md in `docs/ifns/tables`). | Auto-synced. |

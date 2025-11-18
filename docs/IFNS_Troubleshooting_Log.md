@@ -179,3 +179,14 @@ Whenever we hit a new “trap”, I’ll keep giving you a ready **log entry blo
 | **Fix** | Implemented `scripts/ifns_sync_coreml_stages.py`, which finds IFNS  UI Master, ensures a `Core ML Build Stages` hub, then ensures Stage 0007 pages and their 01/02/03 children, and finally syncs content from the corresponding Markdown files. |
 | **Prevent / lessons** | 1) Keep Stages in a dedicated hub under IFNS  UI Master to avoid mixing conceptual Steps with execution Stages. 2) Use consistent 01/02/03 section pattern so the same sync logic works for Steps and Stages. 3) After every structural change, update `IFNS_Notion_Page_Index.md` and this log. |
 | **Commands** | `.\local_env\notion_env.ps1` then `python .\scripts\ifns_sync_coreml_stages.py`. |
+## 2025-11-18  Phase 4  Tables & Telemetry (DB Hub) initial sync
+
+| Field    | Details |
+|---------|---------|
+| **Area** | Phase 4 Tables & Telemetry specs (docs/ifns/tables -> Notion pages) |
+| **Symptom** | N/A (initial successful sync). `ifns_sync_tables_phase4.py` created/updated the `Tables & Telemetry (DB Hub)` page under IFNS  UI Master and one child page for each .md spec file in `docs/ifns/tables`. |
+| **Context** | Markdown specs for Phase 4 live under `docs/ifns/tables`. Script is run from repo root with Notion env loaded via `.\local_env\notion_env.ps1`. Pages are created as children of `Tables & Telemetry (DB Hub)` and their content fully replaced by the corresponding .md file on each sync. |
+| **Root cause** | (Design entry) Need a clean place in Notion to host all tables/telemetry specs and to prepare for later CSV->DB sync. |
+| **Fix** | Implemented `scripts/ifns_sync_tables_phase4.py` to discover all `.md` files in `docs/ifns/tables`, ensure a matching page under `Tables & Telemetry (DB Hub)`, archive old content blocks, and push the full markdown as paragraphs. |
+| **Prevent / lessons** | 1) Keep Phase 4 files isolated in `docs/ifns/tables` so the script can discover them cleanly. 2) Use a dedicated hub (`Tables & Telemetry (DB Hub)`) to avoid mixing DB specs with Steps/Stages. 3) After each sync, update IFNS_Notion_Page_Index.md and this log. |
+| **Commands** | `.\local_env\notion_env.ps1` then `python .\scripts\ifns_sync_tables_phase4.py`. |
