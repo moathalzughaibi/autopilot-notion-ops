@@ -27,3 +27,6 @@
 > - Open the page in Notion, copy the URL, and (optionally) extract the page ID from it.  
 > - Paste the ID into the **Page ID** column and the URL into **URL**.  
 > - Keep this file updated when new pages (e.g., Core ML root, Admin Console, Awareness Mirror) are added.
+| 17 | UI Master Summary      | 2afb22c7-70d9-8118-a932-f5372d894674 | IFNS – UI Master |  | High-level summary of IFNS – UI Master coverage, Core ML linkage, and roadmap. | Synced from `docs/ifns/IFNS_UI_Master_Summary_v2.md` via `ifns_sync_master_phase2.py`. |
+| 18 | Steps Index            | 2afb22c7-70d9-8157-89be-d5b9598a9604 | IFNS  UI Master |  | Index of all 14 IFNS UI Steps with spec file mapping and Core ML stage links. | Synced from `docs/ifns/IFNS_UI_Steps_Index_v2.md`. |
+| 19 | Drafts & Working Notes | 2afb22c7-70d9-81e5-805f-e96d174eebe6 | IFNS  UI Master |  | Log of drafts, phases, and working notes for IFNS UI work. | Synced from `docs/ifns/IFNS_UI_Drafts_and_Working_Notes_v2.md`. |
