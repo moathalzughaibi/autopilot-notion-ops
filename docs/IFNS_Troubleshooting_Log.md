@@ -168,3 +168,14 @@ Whenever we hit a new “trap”, I’ll keep giving you a ready **log entry blo
 | **Fix** | Overwrote `scripts/ifns_sync_master_phase2.py` with an auto-discovery implementation and reran `python .\scripts\ifns_sync_master_phase2.py`, which used `IFNS_UI_Master_Summary_v2.md`, `IFNS_UI_Steps_Index_v2.md`, and `IFNS_UI_Drafts_and_Working_Notes_v2.md` to create the three child pages and update their content (4,142 / 3,847 / 2,546 chars respectively). :contentReference[oaicite:4]{index=4} |
 | **Prevent / lessons** | 1) Prefer filename-stem matching + auto-discovery over hard-coded full paths when specs may evolve (`v2`, `v3`, etc.). 2) For any new phase, ensure the sync script prints which file it chose so debugging is easy. 3) Keep the rule: after every sync, update both `IFNS_Notion_Page_Index.md` and `IFNS_Troubleshooting_Log.md`. |
 | **Commands** | `.\local_env\notion_env.ps1` then `python .\scripts\ifns_sync_master_phase2.py`. |
+## 2025-11-18  Phase 3  Core ML Build Stages (Stage 0007) initial sync
+
+| Field    | Details |
+|---------|---------|
+| **Area** | Core ML Build Stages (Stages 0007)  IFNS  UI Master / Notion sync |
+| **Symptom** | N/A (initial design + successful sync). `ifns_sync_coreml_stages.py` created/updated the Core ML Build Stages hub and Stage 0007 pages with their 01/02/03 children in Notion. |
+| **Context** | Markdown specs for Stages 0007 were stored under `docs/ifns/stages/Stage_*.md`, each using the sections `## 01  Narrative & Intent`, `## 02  Contracts / Tables / JSON Artifacts`, and `## 03  Notes & Decisions`. Running the script from the repo root with `.\local_env\notion_env.ps1` loaded pushed these sections into matching subpages in Notion. |
+| **Root cause** | (Design entry) Need a clean, automated bridge between Git-backed Core ML specs and Notion pages so future agents can maintain the ML build pipeline without touching the API directly. |
+| **Fix** | Implemented `scripts/ifns_sync_coreml_stages.py`, which finds IFNS  UI Master, ensures a `Core ML Build Stages` hub, then ensures Stage 0007 pages and their 01/02/03 children, and finally syncs content from the corresponding Markdown files. |
+| **Prevent / lessons** | 1) Keep Stages in a dedicated hub under IFNS  UI Master to avoid mixing conceptual Steps with execution Stages. 2) Use consistent 01/02/03 section pattern so the same sync logic works for Steps and Stages. 3) After every structural change, update `IFNS_Notion_Page_Index.md` and this log. |
+| **Commands** | `.\local_env\notion_env.ps1` then `python .\scripts\ifns_sync_coreml_stages.py`. |
