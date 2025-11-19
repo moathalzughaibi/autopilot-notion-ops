@@ -60,7 +60,7 @@ def clear_children(notion, page_id):
         notion.blocks.delete(block_id=bid)
 
 def callout(text, emoji="ℹ"):
-    return {"object":"block","type":"callout","callout":{"icon":{"type":"emoji","emoji":emoji},"rich_text":[{"type":"text","text":{"content":text}}]}}
+    return {"object":"block","type":"callout","callout":{"icon":{"type":"emoji","emoji":""},"rich_text":[{"type":"text","text":{"content":text}}]}}
 
 def para(text):
     return {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":text}}]}}
@@ -117,3 +117,4 @@ def main():
 
     print("Operator Home updated.")
 if __name__=="__main__": main()
+
