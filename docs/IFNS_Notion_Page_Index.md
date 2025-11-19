@@ -77,3 +77,8 @@
 ## Notion DB build-out snapshot (2025-11-18T13:17:09.617062Z)
 
 ## Notion DB build-out snapshot (2025-11-18T13:41:30.288540Z)
+
+## Notion DB build-out snapshot (2025-11-18T13:47:06.888183Z)
+- **CalendarGaps2025**  `sync/ifns/calendar_gaps_2025.json` (pk: `event_id`)  DB: `2afb22c7-70d9-8100-ae4a-d9f64b6b6441`
+
+## Notion DB build-out snapshot (2025-11-18T13:56:15.066233+00:00Z)

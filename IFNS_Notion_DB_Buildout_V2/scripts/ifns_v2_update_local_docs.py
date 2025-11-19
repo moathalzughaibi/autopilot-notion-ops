@@ -11,7 +11,7 @@ def main():
     ap.add_argument("--config", default="config/ifns_v2_db_map.json")
     a=ap.parse_args()
     cfg=json.load(open(a.config,"r",encoding="utf-8-sig"))
-    ts=datetime.datetime.utcnow().isoformat()+"Z"
+    ts=datetime.datetime.now(datetime.timezone.utc).isoformat()+"Z"
     idx="docs/IFNS_Notion_Page_Index.md"; log="docs/IFNS_Troubleshooting_Log.md"
     append(idx, f"\n## Notion DB build-out snapshot ({ts})\n")
     for k,info in cfg["databases"].items():
@@ -19,4 +19,5 @@ def main():
     append(log, f"\n### {ts}  DB build-out scripts executed\n- Scripts: create_dbs, sync_generic, sync_qc_weekly, wire_pages\n- Notes: file-first, idempotent upserts by primary key.\n")
     print("Local docs updated.")
 if __name__=="__main__": main()
+
 
