@@ -1,4 +1,7 @@
-﻿param([string]$RootTitle = "IFNS  UI Master (V2)")
+﻿param([string]$RootTitle = "IFNS – UI Master (V2)")
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+if (Test-Path .\.venv\Scripts\Activate.ps1) { . .\.venv\Scripts\Activate.ps1 }
+")
 $Cfg = ".\IFNS_Notion_DB_Buildout_V2\config\ifns_v2_db_map.json"
 
 # load Notion env for this run (fails fast if missing)
@@ -28,3 +31,6 @@ python .\IFNS_Notion_DB_Buildout_V2\scripts\ifns_v2_sync_calendar_gaps.py --conf
 
 python .\IFNS_Notion_DB_Buildout_V2\scripts\ifns_v2_wire_pages.py --root "$RootTitle" --config $Cfg
 python .\IFNS_Notion_DB_Buildout_V2\scripts\ifns_v2_update_local_docs.py --config $Cfg
+
+python .\IFNS_Notion_DB_Buildout_V2\scripts\ifns_v2_saved_views_playbook.py
+python .\IFNS_Notion_DB_Buildout_V2\scripts\ifns_v2_admin_config_index.py
